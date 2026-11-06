@@ -1,0 +1,744 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Die Canibalisten – unser CanSat für CanSat Austria 2026/27: Landung auf einem fremden Planeten simulieren, 3D-Karte der Oberfläche und Bodenprobe. Start am 01.04.2027 in Suben.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect x='30' y='18' width='40' height='68' rx='5' fill='%23FF6A00'/%3E%3Crect x='30' y='44' width='40' height='12' fill='%2314213D'/%3E%3Ccircle cx='72' cy='30' r='9' fill='%230A0F1A'/%3E%3Ccircle cx='72' cy='50' r='8' fill='%230A0F1A'/%3E%3C/svg%3E">
+<meta property="og:title" content="Canibalisten · CanSat Austria 2026/27">
+<meta property="og:description" content="Unser Mini-Satellit simuliert eine Landung auf einem fremden Planeten.">
+<title>Canibalisten · CanSat Austria 2026/27</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: Mission-Control-Look der Team-Seite – dunkle Fläche, orange Akzente, Mono-Labels; drei Ansichten über #start / #mission / #technik */
+:root{
+  --bg:#0A0F1A; --panel:#0F1726; --panel-2:#131D2F; --line:#1E2A3E; --line-2:#2A3850;
+  --fg:#E1E7EF; --muted:#97A3B6; --dim:#6E7B90;
+  --accent:#FF6A00; --accent-soft:rgba(255,106,0,.12); --accent-ink:#0A0F1A;
+  --blue:#5B8CFF; --ok:#3CCB8A; --warn:#F2B84B;
+  --display:"Space Grotesk",ui-sans-serif,system-ui,sans-serif;
+  --body:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  --wrap:1180px;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.6;margin:0;
+  background-image:radial-gradient(900px 500px at 85% -10%,rgba(255,106,0,.10),transparent 60%),radial-gradient(700px 400px at -10% 20%,rgba(91,140,255,.07),transparent 60%);
+  background-attachment:fixed}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+a{color:var(--accent)}
+.wrap{max-width:var(--wrap);margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.label{font-family:var(--mono);font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--accent);margin:0}
+.label.muted{color:var(--dim)}
+h1,h2,h3{font-family:var(--display);font-weight:600;margin:0;text-wrap:balance;color:var(--fg)}
+h1{font-size:clamp(44px,8vw,76px);letter-spacing:-.025em;line-height:1.02}
+h2{font-size:clamp(28px,4.2vw,38px);letter-spacing:-.02em;line-height:1.15}
+h3{font-size:19px;letter-spacing:-.01em;line-height:1.3}
+p{margin:0}
+.lead{color:var(--muted);font-size:17px;max-width:62ch}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
+
+/* Kopfzeile */
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:rgba(10,15,26,.86);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:12px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--fg)}
+.brand svg{width:40px;height:40px;flex:none}
+.brand b{font-family:var(--display);font-size:18px;font-weight:700;display:block;line-height:1.1}
+.brand small{font-family:var(--mono);font-size:10px;letter-spacing:.22em;color:var(--dim);text-transform:uppercase}
+nav{display:flex;gap:4px;flex-wrap:wrap}
+nav a{font-family:var(--mono);font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);text-decoration:none;padding:10px 12px;border:1px solid transparent;min-height:40px;display:inline-flex;align-items:center}
+nav a:hover{color:var(--fg)}
+nav a[aria-current="page"]{color:var(--accent);border-color:var(--line-2);background:var(--accent-soft)}
+
+/* Abschnitte */
+main section{padding-block:clamp(48px,8vw,88px)}
+main section+section{border-top:1px solid var(--line)}
+.head{display:flex;flex-direction:column;gap:12px;margin-bottom:32px;max-width:760px}
+
+/* Startbereich */
+.hero{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(28px,5vw,56px);align-items:center}
+@media (max-width:880px){.hero{grid-template-columns:minmax(0,1fr)}}
+.hero-text{display:flex;flex-direction:column;gap:22px;min-width:0}
+.hero h1 span{color:var(--accent)}
+.actions{display:flex;gap:12px;flex-wrap:wrap}
+.btn{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;text-decoration:none;padding:14px 18px;min-height:46px;display:inline-flex;align-items:center;gap:10px;border:1px solid var(--line-2);color:var(--fg);background:transparent}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:500}
+.btn:hover{border-color:var(--accent)}
+.meta-line{font-family:var(--mono);font-size:11px;letter-spacing:.2em;color:var(--dim);text-transform:uppercase}
+.visual{display:flex;flex-direction:column;gap:14px;min-width:0}
+.scene{border:1px solid var(--line);background:linear-gradient(180deg,#0E1830,#0B1222);position:relative;overflow:hidden}
+.scene svg{display:block;width:100%;height:auto}
+.scene .tag{position:absolute;left:12px;bottom:10px;font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--muted);text-transform:uppercase}
+.count{border:1px solid var(--line);background:var(--panel);padding:18px}
+.count-top{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.live{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--accent);text-transform:uppercase;display:inline-flex;align-items:center;gap:6px}
+.live::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent);animation:blink 1.6s infinite}
+@keyframes blink{50%{opacity:.25}}
+.digits{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.digit{border:1px solid var(--line-2);background:var(--panel-2);padding:12px 6px;text-align:center}
+.digit b{display:block;font-family:var(--display);font-size:clamp(26px,4vw,34px);font-weight:600;font-variant-numeric:tabular-nums;line-height:1.1}
+.digit small{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--dim);text-transform:uppercase}
+.count-foot{margin-top:12px;font-family:var(--mono);font-size:11px;color:var(--dim)}
+
+/* Faktenraster */
+.split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(28px,5vw,56px);align-items:start}
+@media (max-width:880px){.split{grid-template-columns:minmax(0,1fr)}}
+.split .txt{display:flex;flex-direction:column;gap:16px;min-width:0}
+.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}
+.fact{background:var(--panel);padding:18px}
+.fact small{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--dim);text-transform:uppercase;display:block;margin-bottom:6px}
+.fact b{font-family:var(--display);font-size:24px;font-weight:600;font-variant-numeric:tabular-nums}
+.fact.wide{grid-column:1/-1}
+
+/* Karten */
+.cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+@media (max-width:880px){.cards{grid-template-columns:minmax(0,1fr)}}
+.card{border:1px solid var(--line);background:var(--panel);padding:24px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.card p{color:var(--muted)}
+.card .icon{width:36px;height:36px;color:var(--accent)}
+.more{display:flex;justify-content:flex-end;margin-top:20px}
+.more a{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;text-decoration:none}
+
+/* Team */
+.team{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+@media (max-width:880px){.team{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:520px){.team{grid-template-columns:minmax(0,1fr)}}
+.person{border:1px solid var(--line);background:var(--panel);padding:18px;display:flex;flex-direction:column;gap:6px}
+.avatar{aspect-ratio:16/10;max-width:100%;background:var(--panel-2);border:1px dashed var(--line-2);display:grid;place-items:center;font-family:var(--display);font-size:26px;font-weight:600;color:var(--accent);margin-bottom:8px}
+.person h3{font-size:17px}
+.person p{color:var(--muted);font-size:14px}
+.note{margin-top:18px;font-family:var(--mono);font-size:11px;letter-spacing:.14em;color:var(--dim);text-transform:uppercase}
+.sub-label{margin:32px 0 14px}
+
+/* Sponsoren */
+.sponsors{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+@media (max-width:700px){.sponsors{grid-template-columns:minmax(0,1fr)}}
+.sponsor{border:1px dashed var(--line-2);padding:28px 18px;text-align:center;display:flex;flex-direction:column;gap:6px;align-items:center}
+.sponsor b{font-family:var(--display);font-size:18px;color:var(--muted);font-weight:500}
+
+/* Mission */
+.blocks{display:flex;flex-direction:column;gap:16px}
+.block{--c:var(--accent);display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(20px,4vw,40px);align-items:center;border:1px solid var(--line);border-top:3px solid var(--c);padding:clamp(20px,3.5vw,32px);
+  background:linear-gradient(135deg,color-mix(in srgb,var(--c) 10%,var(--panel)) 0%,var(--panel) 55%)}
+.block.b2{--c:var(--blue)}
+.block.b3{--c:var(--ok)}
+.block.flip .art{order:-1}
+@media (max-width:820px){.block{grid-template-columns:minmax(0,1fr)}.block.flip .art{order:0}}
+.block .txt{display:flex;flex-direction:column;gap:12px;min-width:0}
+.block .label{color:var(--c)}
+.block h3{font-size:clamp(20px,2.6vw,26px)}
+.block p{color:var(--muted);max-width:62ch}
+.art{border:1px solid var(--line-2);background:#0B1222;min-width:0}
+.art svg{display:block;width:100%;height:auto}
+.player{display:flex;align-items:center;gap:12px;padding:10px 12px;border-top:1px solid var(--line-2);background:var(--panel)}
+.player button{width:40px;height:40px;flex:none;border:1px solid var(--line-2);background:var(--panel-2);color:var(--fg);font-size:13px;cursor:pointer}
+.player button:hover{border-color:var(--c)}
+.track{flex:1;height:4px;background:var(--line-2);position:relative;overflow:hidden}
+.track span{position:absolute;inset:0 auto 0 0;width:0;background:var(--c)}
+.player-t{font-family:var(--mono);font-size:11px;color:var(--dim);font-variant-numeric:tabular-nums;min-width:38px;text-align:right}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.pill{font-family:var(--mono);font-size:11px;letter-spacing:.06em;padding:6px 10px;border:1px solid color-mix(in srgb,var(--c) 45%,transparent);color:var(--fg);background:color-mix(in srgb,var(--c) 12%,transparent)}
+.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr));gap:16px}
+.step{border:1px solid var(--line);background:var(--panel);padding:20px;display:flex;flex-direction:column;gap:8px}
+.step .n{font-family:var(--mono);font-size:12px;color:var(--accent);letter-spacing:.18em}
+.step p{color:var(--muted);font-size:15px}
+.dates{border:1px solid var(--line);overflow-x:auto}
+.dates table{width:100%;border-collapse:collapse;min-width:520px}
+.dates th,.dates td{text-align:left;padding:14px 18px;border-bottom:1px solid var(--line);vertical-align:top}
+.dates th{font-family:var(--mono);font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);font-weight:400;background:var(--panel)}
+.dates td:first-child{font-family:var(--mono);font-size:13px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.dates tr.big td{color:var(--fg)}
+.dates tr.big td:first-child{color:var(--accent)}
+.dates td{color:var(--muted)}
+.dates tr:last-child td{border-bottom:0}
+
+/* Technik */
+.group{margin-top:40px}
+.group:first-of-type{margin-top:0}
+.group-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:16px;flex-wrap:wrap}
+.group-head h3{font-size:22px}
+.parts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+@media (max-width:980px){.parts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:620px){.parts{grid-template-columns:minmax(0,1fr)}}
+.part{border:1px solid var(--line);background:var(--panel);padding:20px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.part .top{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.part h4{font-family:var(--display);font-size:17px;font-weight:600;margin:0;line-height:1.3}
+.part .role{font-family:var(--mono);font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent)}
+.part p{color:var(--muted);font-size:14.5px}
+.part .spec{margin-top:auto;padding-top:10px;border-top:1px solid var(--line);font-family:var(--mono);font-size:11.5px;color:var(--dim);overflow-wrap:anywhere}
+.chip{font-family:var(--mono);font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;padding:3px 7px;border:1px solid var(--line-2);color:var(--muted);white-space:nowrap}
+.chip.plan{color:var(--warn);border-color:rgba(242,184,75,.4)}
+.chip.dev{color:var(--blue);border-color:rgba(91,140,255,.45)}
+
+footer{border-top:1px solid var(--line);padding-block:28px;color:var(--dim);font-size:13px}
+footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+footer span{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+</style>
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)} img{max-width:100%} [hidden]{display:none!important}</style>
+</head>
+<body>
+
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="logo" viewBox="0 0 200 200">
+      <mask id="bite"><rect width="200" height="200" fill="#fff"/><circle cx="150" cy="64" r="15" fill="#000"/><circle cx="146" cy="88" r="14" fill="#000"/><circle cx="150" cy="111" r="13" fill="#000"/></mask>
+      <ellipse cx="100" cy="114" rx="90" ry="28" fill="none" stroke="#5B8CFF" stroke-width="7" transform="rotate(-16 100 114)"/>
+      <line x1="86" y1="48" x2="70" y2="16" stroke="#E1E7EF" stroke-width="6" stroke-linecap="round"/><circle cx="69" cy="14" r="7" fill="#E1E7EF"/>
+      <g mask="url(#bite)">
+        <rect x="62" y="52" width="76" height="112" rx="6" fill="#FF6A00"/>
+        <ellipse cx="100" cy="164" rx="38" ry="9" fill="#FF6A00"/>
+        <rect x="62" y="94" width="76" height="22" fill="#14213D"/>
+        <circle cx="82" cy="105" r="5" fill="#FFD166"/>
+        <ellipse cx="100" cy="52" rx="38" ry="9" fill="#FFB27A"/><ellipse cx="100" cy="52" rx="27" ry="5.5" fill="#E8630A"/>
+      </g>
+      <path d="M10 114 A90 28 0 0 0 190 114" fill="none" stroke="#5B8CFF" stroke-width="7" transform="rotate(-16 100 114)"/>
+    </symbol>
+  </defs>
+</svg>
+
+<header>
+  <div class="wrap bar">
+    <a class="brand" href="#start" aria-label="Canibalisten – zur Startseite">
+      <svg aria-hidden="true"><use href="#logo"/></svg>
+      <span><b>Canibalisten</b><small>CanSat Austria 2026/27</small></span>
+    </a>
+    <nav aria-label="Hauptnavigation">
+      <a href="#start" data-view="start">Startseite</a>
+      <a href="#mission" data-view="mission">Mission</a>
+      <a href="#technik" data-view="technik">Technik</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+<!-- ===================== STARTSEITE ===================== -->
+<div id="view-start" data-page="start">
+  <section>
+    <div class="wrap hero">
+      <div class="hero-text">
+        <p class="label">CanSat Austria 2026/27 · Billrothstraße 73 – Die Schule im Grünen</p>
+        <h1>Canibalisten</h1>
+        <p class="lead">Wir sind die Canibalisten: sechs motivierte Schüler*innen der 6. Klasse mit einem Mini-Satelliten in Getränkedosengröße. Unsere Mission simuliert eine Landung auf einem fremden Planeten – vom Sinkflug mit LiDAR, Wärmebild und Farbfotos bis zur Bohrung im Boden.</p>
+        <div class="actions">
+          <a class="btn primary" href="#mission">Mission ansehen →</a>
+          <a class="btn" href="#technik">Technik</a>
+        </div>
+        <p class="meta-line">Start: 01.04.2027 · Startplatz Suben, Oberösterreich</p>
+      </div>
+
+      <div class="visual">
+        <div class="scene">
+          <svg viewBox="0 0 480 300" role="img" aria-label="Zeichnung: Der CanSat steht nach der Landung auf vier ausgeklappten Beinen, darunter dringt der Bohrer in den Boden">
+            <defs>
+              <linearGradient id="ground" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3A2418"/><stop offset="1" stop-color="#1A1210"/></linearGradient>
+              <linearGradient id="can" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2B3850"/><stop offset=".45" stop-color="#4A5B78"/><stop offset="1" stop-color="#1C2638"/></linearGradient>
+            </defs>
+            <g fill="#E1E7EF" opacity=".7"><circle cx="40" cy="30" r="1.4"/><circle cx="120" cy="58" r="1"/><circle cx="410" cy="36" r="1.5"/><circle cx="455" cy="96" r="1"/><circle cx="300" cy="22" r="1.1"/><circle cx="70" cy="120" r="1"/></g>
+            <circle cx="400" cy="70" r="26" fill="#C1440E" opacity=".85"/><circle cx="392" cy="64" r="5" fill="#A23A0C"/><circle cx="410" cy="80" r="3.5" fill="#A23A0C"/>
+            <path d="M0 232 Q120 218 240 226 T480 222 V300 H0Z" fill="url(#ground)"/>
+            <path d="M0 232 Q120 218 240 226 T480 222" fill="none" stroke="#5E3A26" stroke-width="2"/>
+            <g stroke="#FF6A00" stroke-width="5" stroke-linecap="round">
+              <line x1="214" y1="200" x2="168" y2="231"/><line x1="266" y1="200" x2="312" y2="229"/>
+              <line x1="226" y1="202" x2="208" y2="234" opacity=".55"/><line x1="254" y1="202" x2="274" y2="233" opacity=".55"/>
+            </g>
+            <rect x="211" y="96" width="58" height="108" rx="5" fill="url(#can)" stroke="#5A6B88"/>
+            <ellipse cx="240" cy="96" rx="29" ry="6" fill="#5A6B88"/>
+            <rect x="211" y="138" width="58" height="14" fill="#FF6A00" opacity=".9"/>
+            <circle cx="228" cy="170" r="5" fill="#0A0F1A" stroke="#5B8CFF" stroke-width="2"/>
+            <line x1="252" y1="90" x2="262" y2="58" stroke="#E1E7EF" stroke-width="2.5" stroke-linecap="round"/><circle cx="263" cy="55" r="3.5" fill="#E1E7EF"/>
+            <rect x="236" y="204" width="8" height="10" fill="#97A3B6"/>
+            <path d="M240 214 v40" stroke="#B9C3D3" stroke-width="5"/>
+            <path d="M236 220 l8 4 M236 228 l8 4 M236 236 l8 4 M236 244 l8 4" stroke="#6E7B90" stroke-width="2"/>
+            <path d="M236 254 l4 8 l4 -8z" fill="#B9C3D3"/>
+            <g font-family="JetBrains Mono, monospace" font-size="10" fill="#97A3B6" letter-spacing="1.5">
+              <text x="290" y="120">LIDAR · KAMERA · WÄRMEBILD</text>
+              <line x1="286" y1="116" x2="272" y2="128" stroke="#2A3850"/>
+              <text x="290" y="276">BOHRER Ø 8 MM</text>
+              <line x1="286" y1="272" x2="248" y2="250" stroke="#2A3850"/>
+              <text x="70" y="196">4 BEINE · MOTOR</text>
+              <line x1="152" y1="198" x2="186" y2="214" stroke="#2A3850"/>
+            </g>
+          </svg>
+          <span class="tag">Ø 66 mm · 115 mm · 300–350 g</span>
+        </div>
+        <div class="count" aria-live="off">
+          <div class="count-top">
+            <p class="label muted">T-minus bis zum Start</p>
+            <span class="live">Countdown</span>
+          </div>
+          <div class="digits">
+            <div class="digit"><b id="cd-d">–</b><small>Tage</small></div>
+            <div class="digit"><b id="cd-h">–</b><small>Std</small></div>
+            <div class="digit"><b id="cd-m">–</b><small>Min</small></div>
+            <div class="digit"><b id="cd-s">–</b><small>Sek</small></div>
+          </div>
+          <p class="count-foot">01.04.2027 · Suben, Oberösterreich · Uhrzeit vorläufig 09:00</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap split">
+      <div class="txt">
+        <p class="label">Grundlagen</p>
+        <h2>Was ist ein CanSat?</h2>
+        <p class="lead">Ein CanSat ist ein Mini-Satellit im Format einer Getränkedose: 66 mm Durchmesser, 115 mm Höhe, 300 bis 350 Gramm. Eine Rakete bringt ihn auf rund 700 Meter Höhe, dort wird er ausgeworfen und sinkt am Fallschirm mit 8 bis 11 Metern pro Sekunde zu Boden.</p>
+        <p class="lead">In dieser Dose steckt alles, was ein großer Satellit auch hat – nur viel kleiner: Computer, Sensoren, Funk, Stromversorgung und unsere selbst gebaute Mechanik.</p>
+      </div>
+      <div class="facts">
+        <div class="fact"><small>Durchmesser</small><b>Ø 66 mm</b></div>
+        <div class="fact"><small>Höhe</small><b>115 mm</b></div>
+        <div class="fact"><small>Masse</small><b>300–350 g</b></div>
+        <div class="fact"><small>Auswurfhöhe</small><b>≈ 700 m</b></div>
+        <div class="fact"><small>Sinkgeschwindigkeit</small><b>8–11 m/s</b></div>
+        <div class="fact"><small>Akku-Laufzeit</small><b>≥ 3 h</b></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="head">
+        <p class="label">Missionsziele</p>
+        <h2>Unsere Mission</h2>
+        <p class="lead">Die Pflichtaufgabe lösen wir sauber – und darüber hinaus machen wir aus dem Sinkflug eine Vermessung des Bodens.</p>
+      </div>
+      <div class="cards">
+        <article class="card">
+          <svg class="icon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 26a12 12 0 0 1 24 0"/><path d="M18 26l6-8"/><circle cx="18" cy="26" r="2"/></svg>
+          <h3>Primärmission</h3>
+          <p>Luftdruck und Temperatur, mindestens einmal pro Sekunde per Funk zur Bodenstation – daraus Höhe und Sinkgeschwindigkeit.</p>
+        </article>
+        <article class="card">
+          <svg class="icon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 26l8-6 6 4 7-8 7 5"/><path d="M4 30h28"/><path d="M18 4v10" stroke-dasharray="2 2"/></svg>
+          <h3>Sekundärmission</h3>
+          <p>LiDAR, Farbfotos und Wärmebild werden zu einer 3D-Karte der Oberfläche – und zur Bewertung sicherer Landeplätze.</p>
+        </article>
+        <article class="card">
+          <svg class="icon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="13" y="4" width="10" height="18" rx="1.5"/><path d="M13 20l-6 8M23 20l6 8"/><path d="M18 22v10"/></svg>
+          <h3>Landung &amp; Bohrung</h3>
+          <p>Ein Getriebemotor klappt vier Landebeine aus und richtet den CanSat auf, dann nimmt ein Bohrer Ø 8 mm eine Bodenprobe.</p>
+        </article>
+      </div>
+      <div class="more"><a href="#mission">Details →</a></div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="head">
+        <p class="label">Crew</p>
+        <h2>Das Team</h2>
+        <p class="lead">Sechs Schüler*innen der 6. Klasse, eine Betreuungsperson und ein gemeinsames Ziel. Beim Climate Detectives Wettbewerb haben wir bereits gewonnen – jetzt fliegen wir.</p>
+      </div>
+      <div class="team" id="team"></div>
+      <p class="label muted sub-label">Betreuung</p>
+      <div class="team">
+        <div class="person"><div class="avatar">PB</div><p class="label">Betreuung</p><h3>Platzhalter Betreuungsperson</h3><p>Betreuung und Tutor</p></div>
+      </div>
+      <p class="note">Platzhalter – Namen, Rollen und Fotos ergänzt das Team.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="head">
+        <p class="label">Unterstützung</p>
+        <h2>Unsere Unterstützer</h2>
+        <p class="lead">Elektronik, 3D-Druck, LiDAR und Startgebühr finanzieren wir mit Unterstützung aus der Region. Hier ist Platz für euer Logo.</p>
+      </div>
+      <div class="sponsors">
+        <div class="sponsor"><p class="label">Hauptsponsor</p><b>Platzhalter</b></div>
+        <div class="sponsor"><p class="label">Partner</p><b>Platzhalter</b></div>
+        <div class="sponsor"><p class="label">Unterstützer</p><b>Platzhalter</b></div>
+      </div>
+      <p class="note">Platzhalter – Sponsoren und Logos folgen.</p>
+    </div>
+  </section>
+</div>
+
+<!-- ===================== MISSION ===================== -->
+<div id="view-mission" data-page="mission" hidden>
+  <section>
+    <div class="wrap">
+      <div class="head">
+        <p class="label">Missionsprofil</p>
+        <h1 style="font-size:clamp(36px,6vw,58px)">Zwei Missionen, ein Flug</h1>
+        <p class="lead">Jeder CanSat muss eine Pflichtaufgabe erfüllen. Unsere Sekundärmission geht weiter: Wir bauen aus LiDAR-Abständen, Farbfotos und Wärmebildern eine 3D-Karte der Oberfläche, suchen einen sicheren Landeplatz – und bohren nach der Landung in den Boden.</p>
+      </div>
+      <div class="blocks">
+        <article class="block b1">
+          <div class="txt">
+            <p class="label">Pflichtaufgabe</p>
+            <h3>Primärmission: Druck, Temperatur, Funk</h3>
+            <p>Wir messen Luftdruck und Temperatur und senden die Werte mindestens einmal pro Sekunde per Funk an die Bodenstation. Der ESP32-S3 liest drei BMP585 und drei SHT45 aus, ergänzt Beschleunigung, Drehrate und Magnetfeld aus einem Lagesensor sowie die GPS-Position und packt alles in ein kompaktes Datenpaket.</p>
+            <p>Aus dem Luftdruck berechnen wir die Höhe, aus der Höhenänderung die Sinkgeschwindigkeit – direkt an Bord und zur Sicherheit zusätzlich auf der microSD-Karte gespeichert.</p>
+            <div class="pills"><span class="pill">≥ 1 Paket/s</span><span class="pill">3 × BMP585</span><span class="pill">3 × SHT45</span><span class="pill">2,4-GHz-Funk</span></div>
+          </div>
+          <div class="art">
+            <svg viewBox="0 0 360 240" role="img" aria-label="Der CanSat sinkt am Fallschirm und funkt Druck und Temperatur an die Bodenstation, daneben die Höhenkurve des Flugs">
+              <g fill="#E1E7EF" opacity=".6"><circle cx="24" cy="20" r="1.2"/><circle cx="300" cy="16" r="1"/><circle cx="200" cy="40" r="1.1"/><circle cx="340" cy="70" r="1"/></g>
+              <!-- Fallschirm -->
+              <path d="M44 52 Q74 14 104 52 Z" fill="#FF6A00"/><path d="M54 52 Q74 30 94 52" fill="none" stroke="#FFB27A" stroke-width="2"/>
+              <path d="M46 52 L68 86 M74 52 L74 86 M102 52 L80 86" stroke="#97A3B6" stroke-width="1"/>
+              <rect x="64" y="86" width="20" height="32" rx="3" fill="#4A5B78" stroke="#6E7B90"/><rect x="64" y="98" width="20" height="5" fill="#FF6A00"/>
+              <!-- Funkwellen -->
+              <g fill="none" stroke="#5B8CFF" stroke-width="2" stroke-linecap="round">
+                <path d="M94 104 q8 8 0 16" opacity=".95"/><path d="M102 98 q14 14 0 28" opacity=".7"/><path d="M110 92 q20 20 0 40" opacity=".45"/>
+              </g>
+              <path d="M118 120 L270 186" stroke="#5B8CFF" stroke-width="1.2" stroke-dasharray="4 5" opacity=".7"/>
+              <!-- Bodenstation -->
+              <path d="M0 214 H360 V240 H0Z" fill="#1A1A22"/><path d="M0 214 H360" stroke="#2A3850"/>
+              <rect x="258" y="188" width="44" height="26" rx="3" fill="#131D2F" stroke="#2A3850"/>
+              <rect x="263" y="193" width="34" height="14" fill="#0B1222"/>
+              <path d="M265 204 l6-4 6 2 6-6 6 3 6-3" fill="none" stroke="#3CCB8A" stroke-width="1.4"/>
+              <line x1="290" y1="188" x2="296" y2="160" stroke="#97A3B6" stroke-width="2"/><circle cx="296" cy="158" r="3" fill="#5B8CFF"/>
+              <!-- Höhenkurve -->
+              <g transform="translate(170 26)">
+                <rect width="172" height="104" fill="#0F1726" stroke="#1E2A3E"/>
+                <g stroke="#1E2A3E"><line x1="0" y1="26" x2="172" y2="26"/><line x1="0" y1="52" x2="172" y2="52"/><line x1="0" y1="78" x2="172" y2="78"/></g>
+                <path d="M8 96 L18 96 L26 18 L36 14 L50 26 L164 94" fill="none" stroke="#FF6A00" stroke-width="2.4" stroke-linejoin="round"/>
+                <circle cx="36" cy="14" r="3.5" fill="#FF6A00"/>
+                <g font-family="JetBrains Mono, monospace" font-size="8.5" fill="#97A3B6" letter-spacing=".8">
+                  <text x="42" y="13">≈ 700 m</text>
+                  <text x="8" y="-6">HÖHE AUS LUFTDRUCK</text>
+                  <text x="96" y="62">− 9 m/s</text>
+                </g>
+              </g>
+              <g font-family="JetBrains Mono, monospace" font-size="9" fill="#97A3B6" letter-spacing="1"><text x="236" y="232">BODENSTATION</text><text x="20" y="140">p · T · h</text></g>
+            </svg>
+          </div>
+        </article>
+
+        <article class="block b2 flip">
+          <div class="txt">
+            <p class="label">Unsere Zusatzmission</p>
+            <h3>Sekundärmission: 3D-Oberfläche und Landeplatzsuche</h3>
+            <p>Wir machen aus dem Sinkflug eine Vermessung. Der LiDAR LR1000E2 (905 nm) misst Entfernungen bis rund 1000 Meter, die Kamera OV2640 liefert Farbfotos, die Wärmebildkamera MLX90640 ein Temperaturbild mit 32 × 24 Pixeln. Der Lagesensor sagt uns, wohin Laser und Kamera in jedem Moment zeigen.</p>
+            <p>Aus Abstand, Bild und Wärme entsteht eine 3D-Karte der Oberfläche. Darauf markieren wir Flächen, die flach und frei genug für eine Landung wären – und vergleichen die Bewertung nach der Landung mit dem echten Landeplatz.</p>
+            <div class="pills"><span class="pill">LiDAR 905 nm</span><span class="pill">Farbfotos</span><span class="pill">Wärmebild 32 × 24</span><span class="pill">Ampel-Karte</span></div>
+          </div>
+          <div class="art">
+            <svg viewBox="0 0 360 240" role="img" aria-label="Der CanSat tastet das Gelände mit Laserstrahlen ab; die Oberfläche ist nach Landeeignung grün, gelb und rot eingefärbt, daneben ein Wärmebild-Ausschnitt">
+              <defs>
+                <linearGradient id="therm" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2B1B6E"/><stop offset=".35" stop-color="#8A2BB0"/><stop offset=".65" stop-color="#F0602A"/><stop offset="1" stop-color="#FFE45C"/></linearGradient>
+              </defs>
+              <g fill="#E1E7EF" opacity=".6"><circle cx="30" cy="24" r="1.2"/><circle cx="250" cy="18" r="1"/><circle cx="330" cy="50" r="1.1"/></g>
+              <!-- CanSat -->
+              <rect x="166" y="22" width="22" height="34" rx="3" fill="#4A5B78" stroke="#6E7B90"/><rect x="166" y="35" width="22" height="5" fill="#FF6A00"/>
+              <!-- Sichtkegel Kamera -->
+              <path d="M177 56 L80 196 L290 196 Z" fill="#5B8CFF" opacity=".08"/>
+              <!-- LiDAR-Strahlen -->
+              <g stroke="#FF3B3B" stroke-width="1.4" stroke-dasharray="3 4" opacity=".9">
+                <line x1="177" y1="56" x2="120" y2="182"/><line x1="177" y1="56" x2="168" y2="176"/><line x1="177" y1="56" x2="214" y2="172"/><line x1="177" y1="56" x2="262" y2="186"/>
+              </g>
+              <g fill="#FF3B3B"><circle cx="120" cy="182" r="3"/><circle cx="168" cy="176" r="3"/><circle cx="214" cy="172" r="3"/><circle cx="262" cy="186" r="3"/></g>
+              <!-- Gelände mit Ampel-Bewertung -->
+              <path d="M0 200 L40 186 L84 194 L130 180 L180 176 L226 172 L262 184 L300 168 L360 190 V240 H0Z" fill="#20160F"/>
+              <path d="M0 200 L40 186 L84 194" fill="none" stroke="#E5484D" stroke-width="5" stroke-linecap="round"/>
+              <path d="M84 194 L130 180" fill="none" stroke="#F2B84B" stroke-width="5" stroke-linecap="round"/>
+              <path d="M130 180 L180 176 L226 172" fill="none" stroke="#3CCB8A" stroke-width="5" stroke-linecap="round"/>
+              <path d="M226 172 L262 184" fill="none" stroke="#F2B84B" stroke-width="5" stroke-linecap="round"/>
+              <path d="M262 184 L300 168 L360 190" fill="none" stroke="#E5484D" stroke-width="5" stroke-linecap="round"/>
+              <g fill="none" stroke="#3CCB8A" stroke-width="1.5"><path d="M178 160 v10 M173 165 h10"/></g>
+              <!-- Wärmebild-Ausschnitt -->
+              <g transform="translate(16 36)">
+                <rect width="88" height="64" fill="url(#therm)" stroke="#2A3850"/>
+                <g stroke="#0B1222" stroke-opacity=".35"><path d="M0 16H88M0 32H88M0 48H88M22 0V64M44 0V64M66 0V64"/></g>
+                <text x="0" y="-6" font-family="JetBrains Mono, monospace" font-size="8.5" fill="#97A3B6" letter-spacing=".8">WÄRMEBILD</text>
+              </g>
+              <g font-family="JetBrains Mono, monospace" font-size="9" letter-spacing="1">
+                <text x="150" y="226" fill="#3CCB8A">SICHER</text>
+                <text x="16" y="226" fill="#E5484D">STEIL</text>
+                <text x="290" y="226" fill="#E5484D">UNEBEN</text>
+              </g>
+            </svg>
+          </div>
+        </article>
+
+        <article class="block b3">
+          <div class="txt">
+            <p class="label">Mechanik</p>
+            <h3>Landung, Beine, Bohrung</h3>
+            <p>Vier Landebeine liegen im Flug bündig in der Dosenwand, damit der CanSat in die Rakete passt. Nach der Landung fährt ein kleiner Getriebemotor die Beine aus und richtet den CanSat auf; ein Endschalter stoppt den Motor, sobald die Beine ganz offen sind.</p>
+            <p>Erst wenn der Lagesensor meldet, dass der CanSat aufrecht steht, fährt ein Bohrer mit Ø 8 mm über einen zweiten Getriebemotor in den Boden und nimmt eine Bodenprobe.</p>
+            <div class="pills"><span class="pill">4 Landebeine</span><span class="pill">2 Getriebemotoren</span><span class="pill">Endschalter</span><span class="pill">Bohrer Ø 8 mm</span></div>
+          </div>
+          <div class="art">
+            <svg id="mech" viewBox="0 0 360 240" role="img" aria-label="Animation: Der gelandete CanSat liegt auf der Seite, ein Motor fährt die Beine aus, der CanSat richtet sich auf, dann bohrt er in den Boden und holt eine Probe">
+              <defs>
+                <linearGradient id="soil" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4A2E1C"/><stop offset="1" stop-color="#1F140E"/></linearGradient>
+                <linearGradient id="canG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#2B3850"/><stop offset=".45" stop-color="#55688A"/><stop offset="1" stop-color="#1C2638"/></linearGradient>
+                <clipPath id="underground"><rect x="0" y="190" width="360" height="50"/></clipPath>
+              </defs>
+              <g fill="#E1E7EF" opacity=".55"><circle cx="30" cy="22" r="1.2"/><circle cx="120" cy="40" r="1"/><circle cx="320" cy="26" r="1.3"/><circle cx="250" cy="60" r="1"/></g>
+              <path d="M0 190 H360 V240 H0Z" fill="url(#soil)"/><path d="M0 190 H360" stroke="#6B4630" stroke-width="2"/>
+              <g fill="#6B4630" opacity=".7"><circle cx="40" cy="212" r="2"/><circle cx="120" cy="226" r="1.6"/><circle cx="300" cy="230" r="2.2"/><circle cx="230" cy="222" r="1.4"/></g>
+              <!-- Bohrloch und Bohrer (unter der Erde sichtbar) -->
+              <g clip-path="url(#underground)">
+                <rect id="m-hole" x="175" y="190" width="10" height="0" fill="#120C08"/>
+              </g>
+              <!-- CanSat: Ursprung = Mitte des Dosenbodens -->
+              <g id="m-can" transform="translate(180 190)">
+                <g id="m-drill">
+                  <rect x="-3" y="-6" width="6" height="40" fill="#C9D2DF"/>
+                  <path id="m-flute" d="M-3 0 l6 4 M-3 8 l6 4 M-3 16 l6 4 M-3 24 l6 4" stroke="#6E7B90" stroke-width="2"/>
+                  <rect id="m-sample" x="-4" y="18" width="8" height="16" fill="#7A4A2A" opacity="0"/>
+                  <path d="M-3 34 l3 7 l3 -7z" fill="#C9D2DF"/>
+                </g>
+                <line id="m-legL" x1="-21" y1="-6" x2="-21" y2="-66" stroke="#3CCB8A" stroke-width="5" stroke-linecap="round"/>
+                <line id="m-legL2" x1="-10" y1="-5" x2="-10" y2="-65" stroke="#3CCB8A" stroke-width="4" stroke-linecap="round" opacity=".45"/>
+                <rect x="-20" y="-100" width="40" height="100" rx="4" fill="url(#canG)" stroke="#6E7B90"/>
+                <ellipse cx="0" cy="-100" rx="20" ry="4.5" fill="#6E7B90"/>
+                <rect x="-20" y="-62" width="40" height="8" fill="#FF6A00"/>
+                <line x1="8" y1="-104" x2="13" y2="-124" stroke="#E1E7EF" stroke-width="2" stroke-linecap="round"/><circle cx="13" cy="-126" r="2.6" fill="#E1E7EF"/>
+                <!-- Motor-Anzeige -->
+                <g id="m-gear" transform="translate(0 -28)" opacity=".35">
+                  <circle r="7" fill="none" stroke="#3CCB8A" stroke-width="2.5" stroke-dasharray="3.2 2.3"/><circle r="2.2" fill="#3CCB8A"/>
+                </g>
+                <line id="m-legR2" x1="10" y1="-5" x2="10" y2="-65" stroke="#3CCB8A" stroke-width="4" stroke-linecap="round" opacity=".45"/>
+                <line id="m-legR" x1="21" y1="-6" x2="21" y2="-66" stroke="#3CCB8A" stroke-width="5" stroke-linecap="round"/>
+              </g>
+              <g id="m-ok" opacity="0">
+                <rect x="232" y="64" width="104" height="22" fill="#0F1726" stroke="#3CCB8A"/>
+                <text x="242" y="79" font-family="JetBrains Mono, monospace" font-size="9" fill="#3CCB8A" letter-spacing="1">✓ STEHT AUFRECHT</text>
+              </g>
+              <text id="m-cap" x="16" y="214" font-family="JetBrains Mono, monospace" font-size="10" fill="#E1E7EF" letter-spacing="1">1 · GELANDET</text>
+              <text id="m-sub" x="16" y="230" font-family="JetBrains Mono, monospace" font-size="9" fill="#97A3B6" letter-spacing=".6">liegt auf der Seite, Beine angelegt</text>
+            </svg>
+            <div class="player">
+              <button type="button" id="m-play" aria-label="Animation anhalten">❚❚</button>
+              <div class="track" aria-hidden="true"><span id="m-bar"></span></div>
+              <span class="player-t" id="m-step">1 / 5</span>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="head">
+        <p class="label">Ablauf</p>
+        <h2>Vom Start bis zur Auswertung</h2>
+        <p class="lead">Sieben Phasen – jede mit klarer Aufgabe für Team, Bordcomputer und Bodenstation.</p>
+      </div>
+      <ol class="steps">
+        <li class="step"><span class="n">01</span><h3>Start</h3><p>Die Rakete hebt in Suben ab. Der Lagesensor erkennt den Start, Kamera und LiDAR schalten sich ein.</p></li>
+        <li class="step"><span class="n">02</span><h3>Auswurf</h3><p>Auf rund 700 Metern Höhe wird der CanSat ausgeworfen. Der Fallschirm öffnet sich und bremst auf 8 bis 11 m/s.</p></li>
+        <li class="step"><span class="n">03</span><h3>Messen</h3><p>Mindestens einmal pro Sekunde: Druck, Temperatur, Lage und Position. Gleichzeitig laufen LiDAR, Kamera und Wärmebildkamera mit.</p></li>
+        <li class="step"><span class="n">04</span><h3>Rechnen &amp; Speichern</h3><p>Aus den Druckdaten entstehen Höhe und Sinkgeschwindigkeit, aus den LiDAR-Abständen das Profil der Oberfläche. Fotos und Messwerte landen auf der microSD-Karte.</p></li>
+        <li class="step"><span class="n">05</span><h3>Landung</h3><p>Der CanSat setzt auf. Wir vergleichen die vorab bewertete sichere Fläche mit dem tatsächlichen Landeplatz.</p></li>
+        <li class="step"><span class="n">06</span><h3>Aufrichten</h3><p>Der Getriebemotor fährt die vier Landebeine aus und richtet den CanSat auf.</p></li>
+        <li class="step"><span class="n">07</span><h3>Bohren &amp; Auswerten</h3><p>Der Bohrer nimmt eine Bodenprobe mit Ø 8 mm. Danach werten wir Probe, Flugdaten und 3D-Karte gemeinsam aus.</p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="head">
+        <p class="label">Fahrplan</p>
+        <h2>Unsere Termine</h2>
+        <p class="lead">Die Meilensteine von CanSat Austria 2026/27 bis zum Abschlussbericht.</p>
+      </div>
+      <div class="dates">
+        <table>
+          <thead><tr><th scope="col">Datum</th><th scope="col">Meilenstein</th></tr></thead>
+          <tbody>
+            <tr><td>12.11.2026</td><td>Kick-off-Veranstaltung</td></tr>
+            <tr><td>17.12.2026</td><td>Update Meeting 1</td></tr>
+            <tr><td>18.01.2027</td><td>Zwischenbericht</td></tr>
+            <tr><td>23.02.2027</td><td>Update Meeting 2a</td></tr>
+            <tr><td>09.03.2027</td><td>Update Meeting 2b</td></tr>
+            <tr><td>31.03.–02.04.2027</td><td>Finale</td></tr>
+            <tr class="big"><td>01.04.2027</td><td>Raketenstart in Suben, Oberösterreich</td></tr>
+            <tr><td>30.04.2027</td><td>Abschlussbericht</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ===================== TECHNIK ===================== -->
+<div id="view-technik" data-page="technik" hidden>
+  <section>
+    <div class="wrap">
+      <div class="head">
+        <p class="label">Systemübersicht</p>
+        <h1 style="font-size:clamp(36px,6vw,58px)">Alles, was in 66 mm passt</h1>
+        <p class="lead">Unser CanSat besteht aus einem ESP32-S3-Bordcomputer, einer Farbkamera, einer Wärmebildkamera, einem LiDAR, drei Druck- und drei Klimasensoren, einem Lagesensor, GPS, einem 2,4-GHz-Funkmodul, zwei Step-Down-Reglern und selbst konstruierter Motor-Mechanik für Beine und Bohrer – untergebracht in einer 3D-gedruckten Hülle von Getränkedosengröße.</p>
+      </div>
+      <div id="groups"></div>
+    </div>
+  </section>
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>Canibalisten · CanSat Austria 2026/27</span>
+    <span>Billrothstraße 73 – Die Schule im Grünen</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  // ---------- Team-Platzhalter ----------
+  var team = document.getElementById('team');
+  for (var i = 1; i <= 6; i++) {
+    var d = document.createElement('div');
+    d.className = 'person';
+    d.innerHTML = '<div class="avatar">PN</div><p class="label">Teammitglied</p><h3>Platzhalter Name ' + i + '</h3><p>Rolle folgt</p>';
+    team.appendChild(d);
+  }
+
+  // ---------- Technik-Daten ----------
+  var groups = [
+    {name:'Bordcomputer', parts:[
+      {n:'ESP32-S3-CAM N16R8', r:'Steuerung, Kamera, Datenspeicher', p:'Das Herz des CanSat: steuert Sensoren, Kamera und Speicherung. Ein zweites Board liegt als Ersatz bereit.', s:'ESP32-S3 · CAM-Anschluss · microSD-Slot · 13 g'},
+      {n:'microSD-Karte 32 GB', r:'Fotos und Messdaten speichern', p:'Steckt direkt im microSD-Slot des Kameraboards, kein externer Adapter nötig.', s:'Class 10 · 0,4 g'},
+      {n:'Adafruit TCA9548A I²C-Multiplexer', r:'Trennt gleiche Sensoradressen', p:'Je ein SHT45 (0x44) und ein BMP585 (0x47) teilen sich einen Kanal; Wärmebild und Lagesensor bleiben am Hauptbus.', s:'I²C 1-auf-8 · 30,6 × 17,6 × 2,7 mm · 1,8 g'}
+    ]},
+    {name:'Sensoren', parts:[
+      {n:'OV2640 Kamera-Modul', r:'Farbfotos', p:'Steckt im CAM-Anschluss des ESP32-S3-CAM. Drei Module gekauft, eines verbaut.', s:'DVP / parallele Kameraschnittstelle'},
+      {n:'Waveshare MLX90640-D55 Wärmebildkamera', r:'Wärmebild der Oberfläche', p:'Liefert ein Temperaturbild mit 55° Sichtfeld für die 3D-Karte.', s:'32 × 24 px · I²C 0x33 · < 23 mA · 7 g'},
+      {n:'LiDAR LR1000E2 (905 nm)', r:'Entfernungsmessung', p:'Misst den Abstand zum Boden bis rund 1000 m. UART-Logikspannung vor dem Anschluss prüfen – der ESP32 verträgt keine 5-V-Signale.', s:'UART-TTL · 3–5 V · bis 10 g'},
+      {n:'9-Achsen-Lagesensor (IMU)', r:'Beschleunigung, Drehrate, Magnetfeld', p:'Erkennt Start, Auswurf und Landung und liefert für jede Messung die Lage des CanSat – Grundlage der 3D-Karte.', s:'I²C · ca. 3 g · Modell wird noch festgelegt', st:'plan'},
+      {n:'Adafruit BMP585 (3×)', r:'Luftdruck & Temperatur', p:'Drei Sensoren an verschiedenen Messpositionen, je an einem Kanal des Multiplexers.', s:'I²C 0x47 · 3 × 2,5 g'},
+      {n:'Adafruit SHT45 (3×)', r:'Temperatur & Luftfeuchtigkeit', p:'Präzise Klimamessung mit PTFE-Filter; jedes Modul teilt sich einen Multiplexer-Kanal mit einem BMP585.', s:'I²C 0x44 · 3 × 1,7 g'},
+      {n:'Adafruit Ultimate GPS Breakout', r:'GPS-Position', p:'Integrierte Antenne – braucht freie Sicht zum Himmel und darf nicht von Metall abgeschirmt werden.', s:'UART · bis 10 Hz · 8,5 g'}
+    ]},
+    {name:'Funk', parts:[
+      {n:'EBYTE E01-ML01DP5 (nRF24L01P)', r:'Funk-Telemetrie, Ziel ca. 1 km', p:'Sendeleistung so einstellen, dass die EU-Grenze von 20 dBm EIRP eingehalten wird; die Reichweite prüfen wir im Praxistest.', s:'SPI · 2,4 GHz · 3,3 V · 4,6 g'},
+      {n:'Klappbare 2,4-GHz-Antenne', r:'Antenne für das Funkmodul', p:'Muss nach der Landung frei abstrahlen können; die Halterung dafür konstruieren wir noch.', s:'3 dBi · SMA · 68 mm ausgeklappt / 48 mm eingeklappt'}
+    ]},
+    {name:'Stromversorgung', parts:[
+      {n:'Amewi Li-Ion Akku 2S 7,4 V', r:'Energieversorgung', p:'Wegen der Baulänge nur längs bzw. hochkant im Gehäuse; Laden nur mit 2S-Balancer.', s:'3000 mAh · 104 g · 70 × 37 × 19 mm'},
+      {n:'Pololu D30V30F5 Step-Down 5 V', r:'5 V für das Kameraboard', p:'Verträgt die 8,4 V des vollen Akkus problemlos.', s:'5–45 V → 5 V · 3,4 A · 3,3 g'},
+      {n:'Pololu D24V22F3 Step-Down 3,3 V', r:'3,3 V für Funk und Sensoren', p:'Hängt parallel zum 5-V-Regler am Akku; nie zwei Spannungen in denselben Eingang einspeisen.', s:'4–36 V → 3,3 V · 2,3 A · 2,3 g'},
+      {n:'Hauptschalter', r:'Kontrolliertes Ein- und Ausschalten', p:'Sitzt in der Akku-Zuleitung; Typ und Ausführung noch offen.', s:'in der Akku-Zuleitung', st:'plan'},
+      {n:'Unterspannungsschutz', r:'Schutz vor Tiefentladung', p:'In der Akku-Zuleitung vorgesehen – zuerst prüfen, ob der Akku bereits eine Schutzschaltung hat.', s:'2S-Akku · Typ offen', st:'plan'}
+    ]},
+    {name:'Mechanik', parts:[
+      {n:'Landebeine mit Motor', r:'Ausklappen und Aufrichten nach der Landung', p:'Im Flug liegen die Beine bündig in der Dosenwand. Nach der Landung fährt ein Getriebemotor sie aus und richtet den CanSat auf; ein Endschalter stoppt den Motor.', s:'4 Beine · 1 Getriebemotor', st:'dev'},
+      {n:'Mini-DC-Getriebemotoren 100 RPM (2×)', r:'Antrieb für Beine und Bohrer', p:'Einer für die Landebeine, einer für den Bohrer. Laufen über den DRV8833; Betriebsstrom unter echter Last messen.', s:'6–12 V · 2 × 9 g'},
+      {n:'Pololu DRV8833 Motortreiber', r:'Ansteuerung beider Getriebemotoren', p:'Kanal A für die Beine, Kanal B für den Bohrer; Anlauf- und Blockierstrom im Test prüfen.', s:'1,2 A Dauer / 2 A Spitze je Kanal · 1,0 g'},
+      {n:'Bohrer Ø 8 mm', r:'Bodenprobe', p:'Fährt nach dem Aufrichten in den Boden, aber erst, wenn der Lagesensor einen stehenden CanSat meldet.', s:'Ø 8 mm · ca. 15 mm Tiefe'},
+      {n:'Fallschirm', r:'Bremst den Sinkflug', p:'Bremst den CanSat auf 8–11 m/s; die Befestigung muss 50 N halten.', s:'Modell wird noch festgelegt', st:'plan'},
+      {n:'Antennen-Mechanik', r:'Antenne beim Aufprall schützen', p:'Halterung, die die Antenne beim Aufprall schützt und danach frei abstrahlen lässt – noch zu konstruieren.', s:'in Entwicklung', st:'dev'}
+    ]},
+    {name:'Struktur', parts:[
+      {n:'3D-gedruckte Hülle', r:'Struktur & Halt', p:'Gehäuse in Dosenformat, aufgebaut aus mehreren gedruckten Teilen.', s:'FDM-Druck · Ø 66 × 115 mm'},
+      {n:'Heat-Set-Gewindeeinsätze', r:'Gewinde in gedruckten Teilen', p:'Werden in die 3D-Druckteile eingeschmolzen; Gewindegröße noch festlegen.', s:'360 Stück'},
+      {n:'Kabel, Stecker & Kleinteile', r:'Verkabelung', p:'Pauschale Reserve für die Massenbilanz – später durch gewogene Werte ersetzen.', s:'ca. 20 g Reserve'}
+    ]}
+  ];
+  var chips = {plan:['plan','geplant'], dev:['dev','in Entwicklung']};
+  var esc = function(t){ var e=document.createElement('span'); e.textContent=t; return e.innerHTML; };
+  var html = '';
+  groups.forEach(function(g){
+    html += '<div class="group"><div class="group-head"><h3>' + esc(g.name) + '</h3><p class="label muted">' + g.parts.length + ' Bauteile</p></div><div class="parts">';
+    g.parts.forEach(function(p){
+      var c = p.st ? '<span class="chip ' + chips[p.st][0] + '">' + chips[p.st][1] + '</span>' : '';
+      html += '<article class="part"><div class="top"><span class="role">' + esc(g.name) + '</span>' + c + '</div><h4>' + esc(p.n) + '</h4><span class="role">' + esc(p.r) + '</span><p>' + esc(p.p) + '</p><div class="spec">' + esc(p.s) + '</div></article>';
+    });
+    html += '</div></div>';
+  });
+  document.getElementById('groups').innerHTML = html;
+
+  // ---------- Ansichten über #start / #mission / #technik ----------
+  var views = ['start','mission','technik'];
+  function show(){
+    var v = (location.hash || '').replace('#','');
+    if (views.indexOf(v) < 0) v = 'start';
+    views.forEach(function(name){
+      document.getElementById('view-' + name).hidden = (name !== v);
+    });
+    document.querySelectorAll('nav a').forEach(function(a){
+      if (a.dataset.view === v) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current');
+    });
+    window.scrollTo(0,0);
+  }
+  window.addEventListener('hashchange', show);
+  show();
+
+  // ---------- Countdown (01.04.2027, 09:00 Uhr Wiener Sommerzeit) ----------
+  var ziel = Date.parse('2027-04-01T09:00:00+02:00');
+  var el = {d:document.getElementById('cd-d'),h:document.getElementById('cd-h'),m:document.getElementById('cd-m'),s:document.getElementById('cd-s')};
+  function tick(){
+    var rest = Math.max(0, Math.floor((ziel - Date.now())/1000));
+    el.d.textContent = Math.floor(rest/86400);
+    el.h.textContent = String(Math.floor(rest%86400/3600)).padStart(2,'0');
+    el.m.textContent = String(Math.floor(rest%3600/60)).padStart(2,'0');
+    el.s.textContent = String(rest%60).padStart(2,'0');
+  }
+  tick(); setInterval(tick, 1000);
+
+  // ---------- Mechanik-Animation: liegen → Beine aus → stehen → bohren → Probe ----------
+  var $ = function(id){ return document.getElementById(id); };
+  var can = $('m-can'), drill = $('m-drill'), flute = $('m-flute'), sample = $('m-sample'), hole = $('m-hole'),
+      gear = $('m-gear'), ok = $('m-ok'), cap = $('m-cap'), sub = $('m-sub'), bar = $('m-bar'), stepEl = $('m-step'), btn = $('m-play');
+  var legs = [[$('m-legR'),21,1],[$('m-legR2'),10,.8],[$('m-legL'),-21,-1],[$('m-legL2'),-10,-.8]];
+  var DAUER = 10000, OPEN = 125, LIFT = 28.4;
+  var texte = [
+    ['1 · GELANDET','liegt auf der Seite, Beine angelegt'],
+    ['2 · MOTOR FÄHRT DIE BEINE AUS','Endschalter stoppt in der Endlage'],
+    ['3 · STEHT','Lagesensor prüft: aufrecht'],
+    ['4 · BOHREN','zweiter Motor treibt den Bohrer'],
+    ['5 · PROBE GEHOLT','Bohrer fährt mit Erde zurück']
+  ];
+  var clamp = function(x){ return x < 0 ? 0 : x > 1 ? 1 : x; };
+  var ease = function(x){ return x * x * (3 - 2 * x); };
+  var ph = function(t,a,b){ return ease(clamp((t - a) / (b - a))); };
+  var letzter = -1;
+  function zeichne(T){
+    var s = ph(T,.12,.52), down = ph(T,.62,.80), up = ph(T,.80,.94);
+    var tilt = 90 * (1 - s), lift = LIFT * s * s;
+    can.setAttribute('transform','translate(180 ' + (190 - lift).toFixed(2) + ') rotate(' + tilt.toFixed(2) + ' 20 0)');
+    legs.forEach(function(l){
+      var x = l[1];
+      l[0].setAttribute('transform','rotate(' + (OPEN * s * Math.sign(l[2])).toFixed(2) + ' ' + x + ' -6)');
+    });
+    var d = down * (1 - up);
+    var off = -42 + 49 * d;
+    drill.setAttribute('transform','translate(0 ' + off.toFixed(2) + ')');
+    var dreh = (T * 400) % 8;
+    flute.setAttribute('transform','translate(0 ' + (T > .62 && T < .94 ? dreh : 0).toFixed(2) + ')');
+    // Bohrloch: so tief, wie die Bohrerspitze in den Boden kam (bleibt danach sichtbar)
+    hole.setAttribute('height', (Math.max(0, 7 + 41 - LIFT) * down).toFixed(2));
+    sample.setAttribute('opacity', T > .80 ? 1 : 0);
+    var motor = (T > .12 && T < .52) || (T > .62 && T < .94);
+    gear.setAttribute('opacity', motor ? 1 : .35);
+    gear.setAttribute('transform','translate(0 -28) rotate(' + (motor ? (T * 3600) % 360 : 0).toFixed(1) + ')');
+    ok.setAttribute('opacity', T > .54 ? 1 : 0);
+    var i = T < .12 ? 0 : T < .54 ? 1 : T < .62 ? 2 : T < .80 ? 3 : 4;
+    if (i !== letzter){ cap.textContent = texte[i][0]; sub.textContent = texte[i][1]; stepEl.textContent = (i + 1) + ' / 5'; letzter = i; }
+    bar.style.width = (T * 100).toFixed(1) + '%';
+  }
+  var ruhig = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var spielt = !ruhig, T = ruhig ? .7 : 0, zuletzt = null;
+  function setBtn(){ btn.textContent = spielt ? '❚❚' : '▶'; btn.setAttribute('aria-label', spielt ? 'Animation anhalten' : 'Animation abspielen'); }
+  btn.addEventListener('click', function(){ spielt = !spielt; zuletzt = null; setBtn(); });
+  function loop(now){
+    if (spielt){
+      if (zuletzt !== null) T = (T + (now - zuletzt) / DAUER) % 1;
+      zuletzt = now;
+    }
+    zeichne(T);
+    requestAnimationFrame(loop);
+  }
+  setBtn(); zeichne(T); requestAnimationFrame(loop);
+})();
+</script>
+
+</body>
+</html>
