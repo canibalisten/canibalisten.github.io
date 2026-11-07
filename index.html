@@ -603,21 +603,12 @@ footer span{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-tra
 <script>
 (function(){
   // =====================================================================
-  //  HIER KÖNNT IHR SELBST ÄNDERN: Namen, Rollen, Fotos, Sponsoren, Galerie
+  //  HIER KÖNNT IHR SELBST ÄNDERN: Sponsoren und Galerie (Team: siehe team.js)
   //  Bilder in den Ordner "bilder" hochladen und hier den Dateinamen eintragen.
   //  Fehlt ein Bild, zeigt die Seite automatisch die Initialen bzw. lässt es weg.
   // =====================================================================
-  var TEAM = [
-    { name: 'Platzhalter Name 1', rolle: 'Rolle folgt', foto: 'bilder/team1.jpg' },
-    { name: 'Platzhalter Name 2', rolle: 'Rolle folgt', foto: 'bilder/team2.jpg' },
-    { name: 'Platzhalter Name 3', rolle: 'Rolle folgt', foto: 'bilder/team3.jpg' },
-    { name: 'Platzhalter Name 4', rolle: 'Rolle folgt', foto: 'bilder/team4.jpg' },
-    { name: 'Platzhalter Name 5', rolle: 'Rolle folgt', foto: 'bilder/team5.jpg' },
-    { name: 'Platzhalter Name 6', rolle: 'Rolle folgt', foto: 'bilder/team6.jpg' }
-  ];
-  var BETREUUNG = [
-    { name: 'Platzhalter Betreuungsperson', rolle: 'Betreuung und Tutor', foto: 'bilder/betreuung.jpg' }
-  ];
+  // Team-Bereich (Namen, Rollen, Fotos): steht in der eigenen Datei team.js
+
   var SPONSOREN = [
     { name: 'Platzhalter', art: 'Hauptsponsor', logo: 'bilder/sponsor1.png' },
     { name: 'Platzhalter', art: 'Partner',      logo: 'bilder/sponsor2.png' },
@@ -634,25 +625,6 @@ footer span{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-tra
   // ======================= ENDE DES BEREICHS ===========================
 
   function esc0(t){ var e = document.createElement('span'); e.textContent = t || ''; return e.innerHTML; }
-  function initialen(n){ return (n || '').split(/\s+/).filter(Boolean).slice(0,2).map(function(w){ return w[0]; }).join('').toUpperCase(); }
-  function personen(ziel, liste, label){
-    var box = document.getElementById(ziel);
-    liste.forEach(function(p){
-      var d = document.createElement('div');
-      d.className = 'person';
-      d.innerHTML = '<div class="avatar">' + esc0(initialen(p.name)) + '</div><p class="label">' + label + '</p><h3>' + esc0(p.name) + '</h3><p>' + esc0(p.rolle) + '</p>';
-      if (p.foto){
-        var img = new Image();
-        img.alt = 'Foto: ' + (p.name || '');
-        img.onload = function(){ var a = d.querySelector('.avatar'); a.textContent = ''; a.appendChild(img); a.classList.add('foto'); };
-        img.src = p.foto;
-      }
-      box.appendChild(d);
-    });
-  }
-  personen('team', TEAM, 'Teammitglied');
-  personen('betreuung', BETREUUNG, 'Betreuung');
-
   var sp = document.getElementById('sponsoren');
   SPONSOREN.forEach(function(x){
     var d = document.createElement('div');
@@ -820,6 +792,7 @@ footer span{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-tra
   setBtn(); zeichne(T); requestAnimationFrame(loop);
 })();
 </script>
+<script src="team.js"></script>
 
 </body>
 </html>

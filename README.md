@@ -7,4 +7,7 @@ Online unter https://canibalisten.github.io
 
 ## Bilder, Namen und Sponsoren selbst einfügen
 1. Fotos in den Ordner `bilder` hochladen – welche Dateinamen gehen, steht in `bilder/LIESMICH.md`.
-2. Namen und Rollen: `index.html` öffnen → Stift-Symbol (Edit) → Bereich „HIER KÖNNT IHR SELBST ÄNDERN“ → Text zwischen den Anführungszeichen ändern → Commit changes.
+2. Team (Namen, Rollen): Datei `team.js` öffnen → Stift-Symbol (Edit) → Text zwischen den Anführungszeichen ändern → Commit changes.
+3. Sponsoren und Galerie: in `index.html` im Bereich „HIER KÖNNT IHR SELBST ÄNDERN“.
+
+Hinweis: Der Team-Bereich (`team.js` und die Teamfotos) wird nur vom Team bearbeitet. Claude öffnet diese Dateien nicht.

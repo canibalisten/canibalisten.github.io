@@ -12,5 +12,5 @@ Ladet hier eure Fotos hoch (Add file → Upload files). Diese Dateinamen erkennt
 Tipps:
 - Dateinamen genau so schreiben: klein, ohne Leerzeichen, `.jpg` bzw. `.png`.
 - Fotos vorher verkleinern (ca. 1200 Pixel breit, unter 500 KB), sonst lädt die Seite langsam.
-- Andere Namen oder mehr Bilder: in `index.html` im Bereich „HIER KÖNNT IHR SELBST ÄNDERN“ eintragen.
+- Namen und Rollen des Teams: in `team.js`. Sponsoren und Galerie: in `index.html` im Bereich „HIER KÖNNT IHR SELBST ÄNDERN“.
 - Nur Fotos verwenden, mit denen alle Abgebildeten einverstanden sind (bei Minderjährigen auch die Eltern).
