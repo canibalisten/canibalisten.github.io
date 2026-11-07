@@ -5,12 +5,12 @@
 //  Fehlt ein Foto, erscheinen automatisch die Initialen.
 // =====================================================================
 var TEAM = [
-  { name: 'Platzhalter Name 1', rolle: 'Rolle folgt', foto: 'bilder/team1.jpg' },
-  { name: 'Platzhalter Name 2', rolle: 'Rolle folgt', foto: 'bilder/team2.jpg' },
-  { name: 'Platzhalter Name 3', rolle: 'Rolle folgt', foto: 'bilder/team3.jpg' },
-  { name: 'Platzhalter Name 4', rolle: 'Rolle folgt', foto: 'bilder/team4.jpg' },
-  { name: 'Platzhalter Name 5', rolle: 'Rolle folgt', foto: 'bilder/team5.jpg' },
-  { name: 'Platzhalter Name 6', rolle: 'Rolle folgt', foto: 'bilder/team6.jpg' }
+  { name: 'Benjamin', rolle: 'Software, Webdisgn', foto: 'bilder/team1.jpg' },
+  { name: 'Constantin', rolle: 'Software', foto: 'bilder/team2.jpg' },
+  { name: 'Kaspar', rolle: 'Hardware', foto: 'bilder/team3.jpg' },
+  { name: 'Lukas', rolle: 'Hardware', foto: 'Lukas.jpg' },
+  { name: 'Mateo', rolle: 'Sponsorensuche', foto: 'Mateo.jpeg' },
+  { name: 'Olin', rolle: 'Bericht, Hardware', foto: 'Olin.jpeg' }
 ];
 var BETREUUNG = [
   { name: 'Platzhalter Betreuungsperson', rolle: 'Betreuung und Tutor', foto: 'bilder/betreuung.jpg' }
