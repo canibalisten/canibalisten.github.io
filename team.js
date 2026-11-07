@@ -8,12 +8,12 @@ var TEAM = [
   { name: 'Benjamin', rolle: 'Software, Webdisgn', foto: 'bilder/team1.jpg' },
   { name: 'Constantin', rolle: 'Software', foto: 'bilder/team2.jpg' },
   { name: 'Kaspar', rolle: 'Hardware', foto: 'bilder/team3.jpg' },
-  { name: 'Lukas', rolle: 'Hardware', foto: 'Lukas.jpg' },
-  { name: 'Mateo', rolle: 'Sponsorensuche', foto: 'Mateo.jpeg' },
-  { name: 'Olin', rolle: 'Bericht, Hardware', foto: 'Olin.jpeg' }
+  { name: 'Lukas', rolle: 'Hardware', foto: 'Bilder/Lukas.jpg' },
+  { name: 'Mateo', rolle: 'Sponsorensuche', foto: 'Bilder/Mateo.jpeg' },
+  { name: 'Olin', rolle: 'Bericht, Hardware', foto: 'Bilder/Olin.jpeg' }
 ];
 var BETREUUNG = [
-  { name: 'Platzhalter Betreuungsperson', rolle: 'Betreuung und Tutor', foto: 'bilder/betreuung.jpg' }
+  { name: 'Dominik Wind', rolle: 'Betreuung und Tutor', foto: 'bilder/betreuung.jpg' }
 ];
 // ======================= ENDE DES BEREICHS ===========================
 
