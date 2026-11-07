@@ -5,7 +5,7 @@
 //  Fehlt ein Foto, erscheinen automatisch die Initialen.
 // =====================================================================
 var TEAM = [
-  { name: 'Benjamin', rolle: 'Software, Webdisgn', foto: 'bilder/team1.jpg' },
+  { name: 'Benjamin', rolle: 'Software, Webdesign', foto: 'bilder/team1.jpg' },
   { name: 'Constantin', rolle: 'Software', foto: 'bilder/team2.jpg' },
   { name: 'Kaspar', rolle: 'Hardware', foto: 'bilder/team3.jpg' },
   { name: 'Lukas', rolle: 'Hardware', foto: 'bilder/team4.jpg' },
