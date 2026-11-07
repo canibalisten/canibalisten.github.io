@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CanSat Live – Can-nibalisten</title>
+<!--
+  Live-Anzeige der Primärmission (Luftdruck, Temperatur, Höhe) für unsere Website.
+
+  So funktioniert es:
+    Bodenstation (python bodenstation.py --website) -> Firebase-Datenbank -> diese Seite.
+    Die Seite hält eine offene Verbindung zur Datenbank ("EventSource") und bekommt
+    jedes neue Paket sofort geschickt – ohne Neuladen.
+
+  Einrichten: unten bei DATENBANK_URL die Adresse eurer Firebase-Datenbank eintragen.
+  Zum Ausprobieren ohne Firebase:  live.html?demo  im Browser öffnen (spielt einen Flug vor).
+-->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --hintergrund: #f4f6f8; --karte: #ffffff; --text: #1d2430; --blass: #5d6878;
+    --linie: #dde2e8; --gut: #1f9d55; --schlecht: #d64545; --akzent: #2563eb;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --hintergrund: #11151b; --karte: #1a2029; --text: #e6eaf0; --blass: #9aa5b4;
+      --linie: #2c3440; --gut: #3ccf7a; --schlecht: #ff6b6b; --akzent: #6ea0ff;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+         background: var(--hintergrund); color: var(--text); }
+  main { max-width: 1100px; margin: 0 auto; padding: 24px 16px 40px; }
+  h1 { font-size: 1.5rem; margin: 0 0 4px; }
+  .untertitel { color: var(--blass); margin: 0 0 20px; }
+  .status { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
+  .punkt { width: 12px; height: 12px; border-radius: 50%; background: var(--schlecht); }
+  .punkt.live { background: var(--gut); box-shadow: 0 0 0 4px color-mix(in srgb, var(--gut) 25%, transparent); }
+  .kacheln { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+             gap: 12px; margin: 16px 0 20px; }
+  .kachel { background: var(--karte); border: 1px solid var(--linie); border-radius: 10px; padding: 14px; }
+  .kachel .name { color: var(--blass); font-size: .85rem; }
+  .kachel .wert { font-size: 1.6rem; font-weight: 700; margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .kachel .einheit { font-size: .95rem; font-weight: 500; color: var(--blass); }
+  .diagramme { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 12px; }
+  .diagramm { background: var(--karte); border: 1px solid var(--linie); border-radius: 10px;
+              padding: 12px; height: 280px; }
+  .hinweis { margin-top: 20px; color: var(--blass); font-size: .85rem; }
+</style>
+</head>
+<body>
+<main>
+  <h1>CanSat Live – Team Can-nibalisten</h1>
+  <p class="untertitel">Primärmission: Luftdruck und Temperatur, live vom CanSat</p>
+  <div class="status"><span class="punkt" id="punkt"></span><span id="statustext">Verbinde …</span></div>
+
+  <div class="kacheln">
+    <div class="kachel"><div class="name">Phase</div><div class="wert" id="phase">–</div></div>
+    <div class="kachel"><div class="name">Höhe</div><div class="wert"><span id="hoehe">–</span> <span class="einheit">m</span></div></div>
+    <div class="kachel"><div class="name">Luftdruck</div><div class="wert"><span id="druck">–</span> <span class="einheit">hPa</span></div></div>
+    <div class="kachel"><div class="name">Temperatur</div><div class="wert"><span id="temp">–</span> <span class="einheit">°C</span></div></div>
+    <div class="kachel"><div class="name">Akku</div><div class="wert"><span id="akku">–</span> <span class="einheit">V</span></div></div>
+    <div class="kachel"><div class="name">Pakete</div><div class="wert" id="anzahl">0</div></div>
+  </div>
+
+  <div class="diagramme">
+    <div class="diagramm"><canvas id="d_hoehe"></canvas></div>
+    <div class="diagramm"><canvas id="d_druck"></canvas></div>
+    <div class="diagramm"><canvas id="d_temp"></canvas></div>
+  </div>
+  <p class="hinweis" id="hinweis"></p>
+</main>
+
+<script>
+// ===== HIER die Adresse eurer Firebase-Datenbank eintragen =====
+const DATENBANK_URL = "https://canibalisten-cansat-cd6cb-default-rtdb.europe-west1.firebasedatabase.app";
+const KEIN_EMPFANG_NACH = 5;   // s ohne neues Paket -> Status wird rot
+
+// Alles, was wir von der Datenbank wissen: { info: {...}, pakete: { "000001": {...}, ... } }
+let zustand = {};
+let letzterEmpfang = null;
+
+// ---------- Diagramme ----------
+function diagramm(id, titel, einheit, linienfarbe) {
+  return new Chart(document.getElementById(id), {
+    type: "line",
+    data: { datasets: [{ data: [], borderColor: linienfarbe, borderWidth: 2, pointRadius: 0 }] },
+    options: {
+      animation: false, maintainAspectRatio: false, parsing: false,
+      plugins: { legend: { display: false }, title: { display: true, text: titel } },
+      scales: {
+        x: { type: "linear", title: { display: true, text: "Zeit seit Start des CanSats [s]" } },
+        y: { title: { display: true, text: einheit } }
+      }
+    }
+  });
+}
+const dHoehe = diagramm("d_hoehe", "Höhe", "m", "#2563eb");
+const dDruck = diagramm("d_druck", "Luftdruck", "hPa", "#e8710a");
+const dTemp = diagramm("d_temp", "Temperatur", "°C", "#d64545");
+
+// ---------- Anzeige aktualisieren ----------
+function zahl(x, stellen) { return x.toFixed(stellen).replace(".", ","); }
+
+function zeichnen() {
+  const pakete = Object.keys(zustand.pakete || {}).sort().map(k => zustand.pakete[k]);
+  document.getElementById("anzahl").textContent = pakete.length;
+  if (pakete.length > 0) {
+    const p = pakete[pakete.length - 1];
+    document.getElementById("phase").textContent = p.phase_name;
+    document.getElementById("hoehe").textContent = zahl(p.hoehe_m, 1);
+    document.getElementById("druck").textContent = zahl(p.druck_hpa, 2);
+    document.getElementById("temp").textContent = zahl(p.temp_c, 2);
+    document.getElementById("akku").textContent = zahl(p.akku_v, 2);
+  }
+  dHoehe.data.datasets[0].data = pakete.map(p => ({ x: p.zeit_s, y: p.hoehe_m }));
+  dDruck.data.datasets[0].data = pakete.map(p => ({ x: p.zeit_s, y: p.druck_hpa }));
+  dTemp.data.datasets[0].data = pakete.map(p => ({ x: p.zeit_s, y: p.temp_c }));
+  dHoehe.update(); dDruck.update(); dTemp.update();
+  if (zustand.info) {
+    document.getElementById("hinweis").textContent = "Flug gestartet: " + zustand.info.flug;
+  }
+}
+
+function statusPruefen() {
+  const sekunden = letzterEmpfang ? (Date.now() - letzterEmpfang) / 1000 : null;
+  const live = sekunden !== null && sekunden < KEIN_EMPFANG_NACH;
+  document.getElementById("punkt").classList.toggle("live", live);
+  document.getElementById("statustext").textContent =
+    live ? "LIVE" : sekunden === null ? "Warte auf Daten …" : `Keine neuen Daten seit ${Math.round(sekunden)} s`;
+}
+setInterval(statusPruefen, 1000);
+
+// Nicht bei jedem Paket neu zeichnen, sondern höchstens 2x pro Sekunde
+let zeichnenGeplant = false;
+function spaeterZeichnen() {
+  if (zeichnenGeplant) return;
+  zeichnenGeplant = true;
+  setTimeout(() => { zeichnenGeplant = false; zeichnen(); }, 500);
+}
+
+// ---------- Daten an einer Stelle im Zustand eintragen ----------
+// pfad z. B. "/" (alles) oder "/pakete/000123" (ein Paket); daten = null heißt löschen
+function setzen(pfad, daten) {
+  const teile = pfad.split("/").filter(t => t !== "");
+  if (teile.length === 0) { zustand = daten || {}; return; }
+  let ort = zustand;
+  for (const teil of teile.slice(0, -1)) {
+    if (typeof ort[teil] !== "object" || ort[teil] === null) ort[teil] = {};
+    ort = ort[teil];
+  }
+  const letzter = teile[teile.length - 1];
+  if (daten === null) delete ort[letzter]; else ort[letzter] = daten;
+}
+
+function neueDaten() {
+  letzterEmpfang = Date.now();
+  statusPruefen();
+  spaeterZeichnen();
+}
+
+// ---------- Verbindung zur Firebase-Datenbank ----------
+function verbinden() {
+  // Firebase schickt bei jeder Änderung ein Ereignis "put" (ersetzen) oder "patch" (ergänzen)
+  const quelle = new EventSource(DATENBANK_URL + "/live.json");
+  quelle.addEventListener("put", e => {
+    const { path, data } = JSON.parse(e.data);
+    setzen(path, data);
+    if (path === "/") { spaeterZeichnen(); } else { neueDaten(); }
+  });
+  quelle.addEventListener("patch", e => {
+    const { path, data } = JSON.parse(e.data);
+    for (const schluessel in data) setzen(path.replace(/\/$/, "") + "/" + schluessel, data[schluessel]);
+    neueDaten();
+  });
+  quelle.onerror = () => {
+    document.getElementById("statustext").textContent = "Verbindung unterbrochen – versuche es erneut …";
+  };
+}
+
+// ---------- Demo-Modus: spielt einen Flug vor (zum Testen ohne Firebase) ----------
+function demo() {
+  document.getElementById("hinweis").textContent = "DEMO-Modus: Das sind ausgedachte Daten, kein echter Flug.";
+  zustand = { pakete: {} };
+  let nr = 0;
+  setInterval(() => {
+    const t = nr * 1.0;
+    let phase = "WARTEN", h = 0;
+    if (t >= 10 && t < 22) { phase = "AUFSTIEG"; h = 700 * Math.sin((t - 10) / 12 * Math.PI / 2); }
+    else if (t >= 22) { h = Math.max(0, 700 - 9 * (t - 22)); phase = h > 0 ? "SINKFLUG" : "GELANDET"; }
+    const hNN = 330 + h;
+    const druck = 1013.25 * Math.pow(1 - 2.25577e-5 * hNN, 5.25588) + (Math.random() - 0.5) * 0.04;
+    zustand.pakete[String(nr).padStart(6, "0")] = {
+      nr, zeit_s: t, hoehe_m: h, druck_hpa: druck, phase_name: phase,
+      temp_c: 15 - 0.0065 * hNN + (Math.random() - 0.5) * 0.1, akku_v: 8.2 - 0.0003 * t
+    };
+    nr++;
+    neueDaten();
+  }, 200);   // 5-mal schneller als echt
+}
+
+if (location.search.includes("demo") || DATENBANK_URL.includes("HIER")) demo(); else verbinden();
+</script>
+</body>
+</html>
