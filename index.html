@@ -183,6 +183,28 @@ main section+section{border-top:1px solid var(--line)}
 .chip.plan{color:var(--warn);border-color:rgba(242,184,75,.4)}
 .chip.dev{color:var(--blue);border-color:rgba(91,140,255,.45)}
 
+/* Live-Daten */
+.live-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:24px}
+.status{display:inline-flex;align-items:center;gap:10px;font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);border:1px solid var(--line-2);background:var(--panel);padding:10px 14px}
+.status .punkt{width:10px;height:10px;border-radius:50%;background:#E5484D;flex:none}
+.status.ist-live{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 45%,transparent)}
+.status.ist-live .punkt{background:var(--ok);box-shadow:0 0 0 4px color-mix(in srgb,var(--ok) 25%,transparent);animation:blink 1.6s infinite}
+.demo-band{display:flex;gap:12px;align-items:center;border:1px solid var(--warn);background:color-mix(in srgb,var(--warn) 12%,transparent);color:var(--fg);padding:12px 16px;margin-bottom:20px}
+.demo-band b{font-family:var(--mono);letter-spacing:.2em;color:var(--warn)}
+.kacheln{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr));gap:1px;background:var(--line);border:1px solid var(--line);margin-bottom:20px}
+.kachel{background:var(--panel);padding:16px}
+.kachel small{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--dim);text-transform:uppercase;display:block;margin-bottom:6px}
+.kachel b{font-family:var(--display);font-size:clamp(22px,3vw,28px);font-weight:600;font-variant-numeric:tabular-nums}
+.kachel span{color:var(--muted);font-size:14px;margin-left:4px}
+.kachel.phase b{color:var(--accent);font-size:clamp(18px,2.4vw,22px);letter-spacing:.02em}
+.kurven{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,330px),1fr));gap:16px}
+.kurve{border:1px solid var(--line);background:var(--panel);padding:14px 14px 8px;min-width:0}
+.kurve h3{font-size:15px;margin-bottom:8px}
+.kurve .box{position:relative;height:240px}
+.flug-info{margin-top:14px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;color:var(--dim);text-transform:uppercase}
+.erklaer{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+@media (max-width:880px){.erklaer{grid-template-columns:minmax(0,1fr)}}
+.erklaer .card p{font-size:15px}
 footer{border-top:1px solid var(--line);padding-block:28px;color:var(--dim);font-size:13px}
 footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
 footer span{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase}
@@ -220,6 +242,7 @@ footer span{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-tra
       <a href="#start" data-view="start">Startseite</a>
       <a href="#mission" data-view="mission">Mission</a>
       <a href="#technik" data-view="technik">Technik</a>
+      <a href="#live" data-view="live">Live-Daten</a>
     </nav>
   </div>
 </header>
@@ -593,6 +616,62 @@ footer span{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-tra
     </div>
   </section>
 </div>
+<!-- ===================== LIVE-DATEN ===================== -->
+<div id="view-live" data-page="live" hidden>
+  <section>
+    <div class="wrap">
+      <div class="live-head">
+        <div class="head" style="margin-bottom:0">
+          <p class="label">Primärmission · Live</p>
+          <h1 style="font-size:clamp(36px,6vw,58px)">Live-Daten</h1>
+          <p class="lead">Luftdruck und Temperatur, direkt vom CanSat über unsere Bodenstation. Die Werte erscheinen hier ohne Neuladen.</p>
+        </div>
+        <div class="status" id="l-status" role="status"><span class="punkt"></span><span id="l-statustext">Verbinde …</span></div>
+      </div>
+
+      <div class="demo-band" id="l-demo" hidden><b>DEMO</b><span>Das ist ein ausgedachter Flug zum Ausprobieren, keine echten Messwerte.</span></div>
+
+      <div class="kacheln">
+        <div class="kachel phase"><small>Phase</small><b id="l-phase">–</b></div>
+        <div class="kachel"><small>Höhe</small><b id="l-hoehe">–</b><span>m</span></div>
+        <div class="kachel"><small>Luftdruck</small><b id="l-druck">–</b><span>hPa</span></div>
+        <div class="kachel"><small>Temperatur</small><b id="l-temp">–</b><span>°C</span></div>
+        <div class="kachel"><small>Akku</small><b id="l-akku">–</b><span>V</span></div>
+        <div class="kachel"><small>Pakete</small><b id="l-anzahl">0</b></div>
+      </div>
+
+      <div class="kurven">
+        <div class="kurve"><h3>Höhe</h3><div class="box"><canvas id="l-d-hoehe" aria-label="Kurve der Höhe über der Zeit" role="img"></canvas></div></div>
+        <div class="kurve"><h3>Luftdruck</h3><div class="box"><canvas id="l-d-druck" aria-label="Kurve des Luftdrucks über der Zeit" role="img"></canvas></div></div>
+        <div class="kurve"><h3>Temperatur</h3><div class="box"><canvas id="l-d-temp" aria-label="Kurve der Temperatur über der Zeit" role="img"></canvas></div></div>
+      </div>
+      <p class="flug-info" id="l-info"></p>
+    </div>
+  </section>
+
+  <section>
+    <div class="wrap">
+      <div class="head">
+        <p class="label">Zum Verstehen</p>
+        <h2>Was ihr hier seht</h2>
+      </div>
+      <div class="erklaer">
+        <article class="card">
+          <h3>Was ist ein CanSat?</h3>
+          <p>Ein Mini-Satellit in der Größe einer Getränkedose. Eine Rakete bringt ihn auf rund 700 Meter, dort wird er ausgeworfen und sinkt am Fallschirm zu Boden.</p>
+        </article>
+        <article class="card">
+          <h3>Die Primärmission</h3>
+          <p>Jeder CanSat muss Luftdruck und Temperatur messen und mindestens einmal pro Sekunde per Funk an die Bodenstation schicken. Unser Laptop lädt jedes Paket sofort hierher hoch.</p>
+        </article>
+        <article class="card">
+          <h3>Warum sinkt der Luftdruck mit der Höhe?</h3>
+          <p>Luftdruck ist das Gewicht der Luft über uns. Je höher der CanSat fliegt, desto weniger Luft liegt über ihm. Nahe am Boden fällt der Druck um etwa 12 hPa pro 100 Meter. Daraus berechnen wir die Höhe.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+</div>
 </main>
 
 <footer>
@@ -711,10 +790,11 @@ footer span{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-tra
   document.getElementById('groups').innerHTML = html;
 
   // ---------- Ansichten über #start / #mission / #technik ----------
-  var views = ['start','mission','technik'];
+  var views = ['start','mission','technik','live'];
   function show(){
     var v = (location.hash || '').replace('#','');
-    if (views.indexOf(v) < 0) v = 'start';
+    if (views.indexOf(v) < 0) v = (location.search.indexOf('demo') >= 0) ? 'live' : 'start';
+    if (window.liveAnzeigen && v === 'live') window.liveAnzeigen();
     views.forEach(function(name){
       document.getElementById('view-' + name).hidden = (name !== v);
     });
@@ -792,6 +872,148 @@ footer span{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-tra
     requestAnimationFrame(loop);
   }
   setBtn(); zeichne(T); requestAnimationFrame(loop);
+})();
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+// =====================================================================
+//  LIVE-DATEN: liest /live aus der Firebase-Datenbank (nur lesen, kein Passwort)
+//  Demo zum Testen:  canibalisten.github.io/?demo#live
+// =====================================================================
+(function () {
+  var DATENBANK_URL = "https://canibalisten-cansat-cd6cb-default-rtdb.europe-west1.firebasedatabase.app";
+  var KEIN_EMPFANG_NACH = 5;   // s ohne neues Paket -> Status nicht mehr LIVE
+
+  var zustand = {};            // { info: {...}, pakete: { "000001": {...}, ... } }
+  var letzterEmpfang = null;
+  var gestartet = false;
+  var dHoehe, dDruck, dTemp;
+  var $ = function (id) { return document.getElementById(id); };
+
+  function zahl(x, stellen) { return (typeof x === "number" && isFinite(x)) ? x.toFixed(stellen).replace(".", ",") : "–"; }
+
+  function diagramm(id, einheit, farbe) {
+    var achse = { color: "#97A3B6", font: { family: "JetBrains Mono, monospace", size: 10 } };
+    return new Chart($(id), {
+      type: "line",
+      data: { datasets: [{ data: [], borderColor: farbe, backgroundColor: farbe, borderWidth: 2, pointRadius: 0 }] },
+      options: {
+        animation: false, maintainAspectRatio: false, parsing: false, normalized: true,
+        plugins: { legend: { display: false }, tooltip: { intersect: false, mode: "index" } },
+        scales: {
+          x: { type: "linear", title: { display: true, text: "Zeit seit Start des CanSat [s]", color: "#6E7B90" }, ticks: achse, grid: { color: "#1E2A3E" } },
+          y: { title: { display: true, text: einheit, color: "#6E7B90" }, ticks: achse, grid: { color: "#1E2A3E" } }
+        }
+      }
+    });
+  }
+
+  function zeichnen() {
+    var pakete = Object.keys(zustand.pakete || {}).sort().map(function (k) { return zustand.pakete[k]; })
+      .filter(function (p) { return p && typeof p === "object"; });
+    $("l-anzahl").textContent = pakete.length;
+    if (pakete.length > 0) {
+      var p = pakete[pakete.length - 1];
+      $("l-phase").textContent = p.phase_name || "–";
+      $("l-hoehe").textContent = zahl(p.hoehe_m, 1);
+      $("l-druck").textContent = zahl(p.druck_hpa, 2);
+      $("l-temp").textContent = zahl(p.temp_c, 2);
+      $("l-akku").textContent = zahl(p.akku_v, 2);
+    } else {
+      ["l-phase", "l-hoehe", "l-druck", "l-temp", "l-akku"].forEach(function (id) { $(id).textContent = "–"; });
+    }
+    if (dHoehe) {
+      dHoehe.data.datasets[0].data = pakete.map(function (p) { return { x: p.zeit_s, y: p.hoehe_m }; });
+      dDruck.data.datasets[0].data = pakete.map(function (p) { return { x: p.zeit_s, y: p.druck_hpa }; });
+      dTemp.data.datasets[0].data = pakete.map(function (p) { return { x: p.zeit_s, y: p.temp_c }; });
+      dHoehe.update(); dDruck.update(); dTemp.update();
+    }
+    if (zustand.info && zustand.info.flug && $("l-demo").hidden) {
+      $("l-info").textContent = "Bodenstation gestartet: " + zustand.info.flug;
+    }
+  }
+
+  function statusPruefen() {
+    var sekunden = letzterEmpfang ? (Date.now() - letzterEmpfang) / 1000 : null;
+    var live = sekunden !== null && sekunden < KEIN_EMPFANG_NACH;
+    $("l-status").classList.toggle("ist-live", live);
+    $("l-statustext").textContent = live ? "LIVE" :
+      (sekunden === null ? "Warte auf Daten …" : "Keine neuen Daten seit " + Math.round(sekunden) + " s");
+  }
+
+  // höchstens 2x pro Sekunde neu zeichnen
+  var zeichnenGeplant = false;
+  function spaeterZeichnen() {
+    if (zeichnenGeplant) return;
+    zeichnenGeplant = true;
+    setTimeout(function () { zeichnenGeplant = false; zeichnen(); }, 500);
+  }
+
+  // Daten an einer Stelle im Zustand eintragen; pfad "/" = alles, daten null = löschen
+  function setzen(pfad, daten) {
+    var teile = pfad.split("/").filter(function (t) { return t !== ""; });
+    if (teile.length === 0) { zustand = daten || {}; return; }
+    var ort = zustand;
+    teile.slice(0, -1).forEach(function (teil) {
+      if (typeof ort[teil] !== "object" || ort[teil] === null) ort[teil] = {};
+      ort = ort[teil];
+    });
+    var letzter = teile[teile.length - 1];
+    if (daten === null) delete ort[letzter]; else ort[letzter] = daten;
+  }
+
+  function neueDaten() { letzterEmpfang = Date.now(); statusPruefen(); spaeterZeichnen(); }
+
+  function verbinden() {
+    var quelle = new EventSource(DATENBANK_URL + "/live.json");
+    quelle.addEventListener("put", function (e) {
+      var d = JSON.parse(e.data);
+      setzen(d.path, d.data);
+      if (d.path === "/") { spaeterZeichnen(); } else { neueDaten(); }
+    });
+    quelle.addEventListener("patch", function (e) {
+      var d = JSON.parse(e.data);
+      for (var k in d.data) setzen(d.path.replace(/\/$/, "") + "/" + k, d.data[k]);
+      neueDaten();
+    });
+    quelle.onerror = function () { $("l-statustext").textContent = "Verbindung unterbrochen – versuche es erneut …"; };
+  }
+
+  // Demo: spielt einen ausgedachten Flug ab (5-mal schneller als echt)
+  function demo() {
+    $("l-demo").hidden = false;
+    $("l-info").textContent = "DEMO-Modus: ausgedachte Daten, kein echter Flug.";
+    zustand = { pakete: {} };
+    var nr = 0;
+    setInterval(function () {
+      var t = nr * 1.0, phase = "WARTEN", h = 0;
+      if (t >= 10 && t < 22) { phase = "AUFSTIEG"; h = 700 * Math.sin((t - 10) / 12 * Math.PI / 2); }
+      else if (t >= 22) { h = Math.max(0, 700 - 9 * (t - 22)); phase = h > 0 ? "SINKFLUG" : "GELANDET"; }
+      var hNN = 330 + h;
+      var druck = 1013.25 * Math.pow(1 - 2.25577e-5 * hNN, 5.25588) + (Math.random() - 0.5) * 0.04;
+      zustand.pakete[String(nr).padStart(6, "0")] = {
+        nr: nr, zeit_s: t, hoehe_m: h, druck_hpa: druck, phase_name: phase,
+        temp_c: 15 - 0.0065 * hNN + (Math.random() - 0.5) * 0.1, akku_v: 8.2 - 0.0003 * t
+      };
+      nr++;
+      neueDaten();
+    }, 200);
+  }
+
+  // Startet erst, wenn jemand die Seite "Live-Daten" öffnet
+  window.liveAnzeigen = function () {
+    if (gestartet) return;
+    gestartet = true;
+    if (window.Chart) {
+      dHoehe = diagramm("l-d-hoehe", "m", "#FF6A00");
+      dDruck = diagramm("l-d-druck", "hPa", "#5B8CFF");
+      dTemp = diagramm("l-d-temp", "°C", "#F2B84B");
+    }
+    statusPruefen();
+    setInterval(statusPruefen, 1000);
+    if (location.search.indexOf("demo") >= 0) demo(); else verbinden();
+  };
+  if (location.hash === "#live" || (!location.hash && location.search.indexOf("demo") >= 0)) window.liveAnzeigen();
 })();
 </script>
 <script>
