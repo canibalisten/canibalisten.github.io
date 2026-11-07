@@ -8,9 +8,9 @@ var TEAM = [
   { name: 'Benjamin', rolle: 'Software, Webdisgn', foto: 'bilder/team1.jpg' },
   { name: 'Constantin', rolle: 'Software', foto: 'bilder/team2.jpg' },
   { name: 'Kaspar', rolle: 'Hardware', foto: 'bilder/team3.jpg' },
-  { name: 'Lukas', rolle: 'Hardware', foto: 'Bilder/Lukas.jpg' },
-  { name: 'Mateo', rolle: 'Sponsorensuche', foto: 'Bilder/Mateo.jpeg' },
-  { name: 'Olin', rolle: 'Bericht, Hardware', foto: 'Bilder/Olin.jpeg' }
+  { name: 'Lukas', rolle: 'Hardware', foto: 'bilder/team4.jpg' },
+  { name: 'Mateo', rolle: 'Sponsorensuche', foto: 'bilder/team5.jpg' },
+  { name: 'Olin', rolle: 'Bericht, Hardware', foto: 'bilder/team6.jpg' }
 ];
 var BETREUUNG = [
   { name: 'Dominik Wind', rolle: 'Betreuung und Tutor', foto: 'bilder/betreuung.jpg' }
