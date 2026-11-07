@@ -118,6 +118,13 @@ main section+section{border-top:1px solid var(--line)}
 .sponsors{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
 @media (max-width:700px){.sponsors{grid-template-columns:minmax(0,1fr)}}
 .sponsor{border:1px dashed var(--line-2);padding:28px 18px;text-align:center;display:flex;flex-direction:column;gap:6px;align-items:center}
+.avatar.foto{border-style:solid;overflow:hidden}
+.avatar img{width:100%;height:100%;object-fit:cover;display:block}
+.sponsor img{max-width:100%;max-height:72px;object-fit:contain}
+.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:16px}
+.gallery figure{margin:0;border:1px solid var(--line);background:var(--panel)}
+.gallery img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
+.gallery figcaption{padding:10px 12px;color:var(--muted);font-size:14px}
 .sponsor b{font-family:var(--display);font-size:18px;color:var(--muted);font-weight:500}
 
 /* Mission */
@@ -339,10 +346,18 @@ footer span{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-tra
       </div>
       <div class="team" id="team"></div>
       <p class="label muted sub-label">Betreuung</p>
-      <div class="team">
-        <div class="person"><div class="avatar">PB</div><p class="label">Betreuung</p><h3>Platzhalter Betreuungsperson</h3><p>Betreuung und Tutor</p></div>
+      <div class="team" id="betreuung"></div>
+    </div>
+  </section>
+
+  <section id="galerie-bereich" hidden>
+    <div class="wrap">
+      <div class="head">
+        <p class="label">Einblicke</p>
+        <h2>Aus der Werkstatt</h2>
+        <p class="lead">Bauen, löten, testen: so entsteht unser CanSat.</p>
       </div>
-      <p class="note">Platzhalter – Namen, Rollen und Fotos ergänzt das Team.</p>
+      <div class="gallery" id="galerie"></div>
     </div>
   </section>
 
@@ -353,12 +368,7 @@ footer span{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-tra
         <h2>Unsere Unterstützer</h2>
         <p class="lead">Elektronik, 3D-Druck, LiDAR und Startgebühr finanzieren wir mit Unterstützung aus der Region. Hier ist Platz für euer Logo.</p>
       </div>
-      <div class="sponsors">
-        <div class="sponsor"><p class="label">Hauptsponsor</p><b>Platzhalter</b></div>
-        <div class="sponsor"><p class="label">Partner</p><b>Platzhalter</b></div>
-        <div class="sponsor"><p class="label">Unterstützer</p><b>Platzhalter</b></div>
-      </div>
-      <p class="note">Platzhalter – Sponsoren und Logos folgen.</p>
+      <div class="sponsors" id="sponsoren"></div>
     </div>
   </section>
 </div>
@@ -592,14 +602,85 @@ footer span{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-tra
 
 <script>
 (function(){
-  // ---------- Team-Platzhalter ----------
-  var team = document.getElementById('team');
-  for (var i = 1; i <= 6; i++) {
-    var d = document.createElement('div');
-    d.className = 'person';
-    d.innerHTML = '<div class="avatar">PN</div><p class="label">Teammitglied</p><h3>Platzhalter Name ' + i + '</h3><p>Rolle folgt</p>';
-    team.appendChild(d);
+  // =====================================================================
+  //  HIER KÖNNT IHR SELBST ÄNDERN: Namen, Rollen, Fotos, Sponsoren, Galerie
+  //  Bilder in den Ordner "bilder" hochladen und hier den Dateinamen eintragen.
+  //  Fehlt ein Bild, zeigt die Seite automatisch die Initialen bzw. lässt es weg.
+  // =====================================================================
+  var TEAM = [
+    { name: 'Platzhalter Name 1', rolle: 'Rolle folgt', foto: 'bilder/team1.jpg' },
+    { name: 'Platzhalter Name 2', rolle: 'Rolle folgt', foto: 'bilder/team2.jpg' },
+    { name: 'Platzhalter Name 3', rolle: 'Rolle folgt', foto: 'bilder/team3.jpg' },
+    { name: 'Platzhalter Name 4', rolle: 'Rolle folgt', foto: 'bilder/team4.jpg' },
+    { name: 'Platzhalter Name 5', rolle: 'Rolle folgt', foto: 'bilder/team5.jpg' },
+    { name: 'Platzhalter Name 6', rolle: 'Rolle folgt', foto: 'bilder/team6.jpg' }
+  ];
+  var BETREUUNG = [
+    { name: 'Platzhalter Betreuungsperson', rolle: 'Betreuung und Tutor', foto: 'bilder/betreuung.jpg' }
+  ];
+  var SPONSOREN = [
+    { name: 'Platzhalter', art: 'Hauptsponsor', logo: 'bilder/sponsor1.png' },
+    { name: 'Platzhalter', art: 'Partner',      logo: 'bilder/sponsor2.png' },
+    { name: 'Platzhalter', art: 'Unterstützer', logo: 'bilder/sponsor3.png' }
+  ];
+  var GALERIE = [
+    { bild: 'bilder/galerie1.jpg', text: '' },
+    { bild: 'bilder/galerie2.jpg', text: '' },
+    { bild: 'bilder/galerie3.jpg', text: '' },
+    { bild: 'bilder/galerie4.jpg', text: '' },
+    { bild: 'bilder/galerie5.jpg', text: '' },
+    { bild: 'bilder/galerie6.jpg', text: '' }
+  ];
+  // ======================= ENDE DES BEREICHS ===========================
+
+  function esc0(t){ var e = document.createElement('span'); e.textContent = t || ''; return e.innerHTML; }
+  function initialen(n){ return (n || '').split(/\s+/).filter(Boolean).slice(0,2).map(function(w){ return w[0]; }).join('').toUpperCase(); }
+  function personen(ziel, liste, label){
+    var box = document.getElementById(ziel);
+    liste.forEach(function(p){
+      var d = document.createElement('div');
+      d.className = 'person';
+      d.innerHTML = '<div class="avatar">' + esc0(initialen(p.name)) + '</div><p class="label">' + label + '</p><h3>' + esc0(p.name) + '</h3><p>' + esc0(p.rolle) + '</p>';
+      if (p.foto){
+        var img = new Image();
+        img.alt = 'Foto: ' + (p.name || '');
+        img.onload = function(){ var a = d.querySelector('.avatar'); a.textContent = ''; a.appendChild(img); a.classList.add('foto'); };
+        img.src = p.foto;
+      }
+      box.appendChild(d);
+    });
   }
+  personen('team', TEAM, 'Teammitglied');
+  personen('betreuung', BETREUUNG, 'Betreuung');
+
+  var sp = document.getElementById('sponsoren');
+  SPONSOREN.forEach(function(x){
+    var d = document.createElement('div');
+    d.className = 'sponsor';
+    d.innerHTML = '<p class="label">' + esc0(x.art) + '</p><b>' + esc0(x.name) + '</b>';
+    if (x.logo){
+      var img = new Image();
+      img.alt = 'Logo: ' + (x.name || '');
+      img.onload = function(){ d.querySelector('b').replaceWith(img); };
+      img.src = x.logo;
+    }
+    sp.appendChild(d);
+  });
+
+  var gal = document.getElementById('galerie');
+  GALERIE.forEach(function(g){
+    var img = new Image();
+    img.alt = g.text || 'Foto aus der Werkstatt';
+    img.loading = 'lazy';
+    img.onload = function(){
+      var f = document.createElement('figure');
+      f.appendChild(img);
+      if (g.text){ var c = document.createElement('figcaption'); c.textContent = g.text; f.appendChild(c); }
+      gal.appendChild(f);
+      document.getElementById('galerie-bereich').hidden = false;
+    };
+    img.src = g.bild;
+  });
 
   // ---------- Technik-Daten ----------
   var groups = [
