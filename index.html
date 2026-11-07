@@ -190,6 +190,8 @@ main section+section{border-top:1px solid var(--line)}
 .status.ist-live{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 45%,transparent)}
 .status.ist-live .punkt{background:var(--ok);box-shadow:0 0 0 4px color-mix(in srgb,var(--ok) 25%,transparent);animation:blink 1.6s infinite}
 .demo-band{display:flex;gap:12px;align-items:center;border:1px solid var(--warn);background:color-mix(in srgb,var(--warn) 12%,transparent);color:var(--fg);padding:12px 16px;margin-bottom:20px}
+.sim-band{border-color:var(--blue);background:color-mix(in srgb,var(--blue) 12%,transparent)}
+.sim-band b{color:var(--blue)!important}
 .demo-band b{font-family:var(--mono);letter-spacing:.2em;color:var(--warn)}
 .kacheln{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,160px),1fr));gap:1px;background:var(--line);border:1px solid var(--line);margin-bottom:20px}
 .kachel{background:var(--panel);padding:16px}
@@ -626,6 +628,7 @@ footer span{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-tra
         <div class="status" id="l-status" role="status"><span class="punkt"></span><span id="l-statustext">Verbinde …</span></div>
       </div>
 
+      <div class="demo-band sim-band" id="l-sim"><b>SIMULIERT</b><span>Bis zum Raketenstart am 01.04.2027 stammen die Daten hier aus Testläufen mit unserem Simulator, nicht aus einem echten Flug.</span></div>
       <div class="demo-band" id="l-demo" hidden><b>DEMO</b><span>Das ist ein ausgedachter Flug zum Ausprobieren, keine echten Messwerte.</span></div>
 
       <div class="kacheln">
@@ -957,6 +960,7 @@ footer span{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-tra
   // Demo: spielt einen ausgedachten Flug ab (5-mal schneller als echt)
   function demo() {
     $("l-demo").hidden = false;
+    $("l-sim").hidden = true;
     $("l-info").textContent = "DEMO-Modus: ausgedachte Daten, kein echter Flug.";
     zustand = { pakete: {} };
     var nr = 0;
