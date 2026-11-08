@@ -13,7 +13,7 @@ var TEAM = [
   { name: 'Olin', rolle: 'Bericht, Hardware', foto: 'bilder/team6.jpg.jpeg' }
 ];
 var BETREUUNG = [
-  { name: 'Dominik Wind', rolle: 'Betreuung und Tutor', foto: '' }
+  { name: 'Dominik Wind', rolle: 'Betreuung und Tutor', foto: 'bilder/Bildschirmfoto_7-11-2026_83310_billroth73.at.jpeg' }
 ];
 // ======================= ENDE DES BEREICHS ===========================
 
