@@ -6,7 +6,7 @@
 // =====================================================================
 var TEAM = [
   { name: 'Benjamin', rolle: 'Software, Webdesign', foto: 'bilder/Medien.jpg' },
-  { name: 'Constantin', rolle: 'Software', foto: 'bilder/team2.jpg' },
+  { name: 'Constantin', rolle: 'Software', foto: 'bilder/Consti.jpeg' },
   { name: 'Kaspar', rolle: 'Hardware', foto: 'bilder/team.3.jpeg' },
   { name: 'Lukas', rolle: 'Hardware', foto: 'bilder/team4.jpg.jpg' },
   { name: 'Mateo', rolle: 'Sponsorensuche', foto: 'bilder/team5.jpg.jpeg' },
