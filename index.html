@@ -291,7 +291,7 @@ footer a.mail:hover{text-decoration:underline}
             <g font-family="JetBrains Mono, monospace" font-size="10" fill="#97A3B6" letter-spacing="1.5">
               <text x="282" y="120">LIDAR · KAMERA</text><text x="282" y="134">WÄRMEBILD</text>
               <line x1="286" y1="116" x2="272" y2="128" stroke="#2A3850"/>
-              <text x="290" y="276">BOHRER Ø 8 MM</text>
+              <text x="290" y="276">BOHRER Ø 15 MM</text>
               <line x1="286" y1="272" x2="248" y2="250" stroke="#2A3850"/>
               <text x="70" y="196">4 BEINE · MOTOR</text>
               <line x1="152" y1="198" x2="186" y2="214" stroke="#2A3850"/>
@@ -356,7 +356,7 @@ footer a.mail:hover{text-decoration:underline}
         <article class="card">
           <svg class="icon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="13" y="4" width="10" height="18" rx="1.5"/><path d="M13 20l-6 8M23 20l6 8"/><path d="M18 22v10"/></svg>
           <h3>Landung &amp; Bohrung</h3>
-          <p>Ein Getriebemotor klappt vier Landebeine aus und richtet den CanSat auf, dann nimmt ein Bohrer Ø 8 mm eine Bodenprobe.</p>
+          <p>Ein Getriebemotor klappt vier Landebeine aus und richtet den CanSat auf, dann nimmt ein Bohrer Ø 15 mm eine Bodenprobe.</p>
         </article>
       </div>
       <div class="more"><a href="#mission">Details →</a></div>
@@ -503,8 +503,8 @@ footer a.mail:hover{text-decoration:underline}
             <p class="label">Mechanik</p>
             <h3>Landung, Beine, Bohrung</h3>
             <p>Vier Landebeine liegen im Flug bündig in der Dosenwand, damit der CanSat in die Rakete passt. Nach der Landung fährt ein kleiner Getriebemotor die Beine aus und richtet den CanSat auf; ein Endschalter stoppt den Motor, sobald die Beine ganz offen sind.</p>
-            <p>Erst wenn der Lagesensor meldet, dass der CanSat aufrecht steht, fährt ein Bohrer mit Ø 8 mm über einen zweiten Getriebemotor in den Boden und nimmt eine Bodenprobe.</p>
-            <div class="pills"><span class="pill">4 Landebeine</span><span class="pill">2 Getriebemotoren</span><span class="pill">Endschalter</span><span class="pill">Bohrer Ø 8 mm</span></div>
+            <p>Erst wenn der Lagesensor meldet, dass der CanSat aufrecht steht, fährt ein Bohrer mit Ø 15 mm über einen zweiten Getriebemotor in den Boden und nimmt eine Bodenprobe.</p>
+            <div class="pills"><span class="pill">4 Landebeine</span><span class="pill">2 Getriebemotoren</span><span class="pill">Endschalter</span><span class="pill">Bohrer Ø 15 mm</span></div>
           </div>
           <div class="art">
             <svg id="mech" viewBox="0 0 360 240" role="img" aria-label="Animation: Der gelandete CanSat liegt auf der Seite, ein Motor fährt die Beine aus, der CanSat richtet sich auf, dann bohrt er in den Boden und holt eine Probe">
@@ -518,15 +518,15 @@ footer a.mail:hover{text-decoration:underline}
               <g fill="#6B4630" opacity=".7"><circle cx="40" cy="212" r="2"/><circle cx="120" cy="226" r="1.6"/><circle cx="300" cy="230" r="2.2"/><circle cx="230" cy="222" r="1.4"/></g>
               <!-- Bohrloch und Bohrer (unter der Erde sichtbar) -->
               <g clip-path="url(#underground)">
-                <rect id="m-hole" x="175" y="190" width="10" height="0" fill="#120C08"/>
+                <rect id="m-hole" x="173" y="190" width="14" height="0" fill="#120C08"/>
               </g>
               <!-- CanSat: Ursprung = Mitte des Dosenbodens -->
               <g id="m-can" transform="translate(180 190)">
                 <g id="m-drill">
-                  <rect x="-3" y="-6" width="6" height="40" fill="#C9D2DF"/>
-                  <path id="m-flute" d="M-3 0 l6 4 M-3 8 l6 4 M-3 16 l6 4 M-3 24 l6 4" stroke="#6E7B90" stroke-width="2"/>
-                  <rect id="m-sample" x="-4" y="18" width="8" height="16" fill="#7A4A2A" opacity="0"/>
-                  <path d="M-3 34 l3 7 l3 -7z" fill="#C9D2DF"/>
+                  <rect x="-4.5" y="-6" width="9" height="40" fill="#C9D2DF"/>
+                  <path id="m-flute" d="M-4.5 0 l9 4 M-4.5 8 l9 4 M-4.5 16 l9 4 M-4.5 24 l9 4" stroke="#6E7B90" stroke-width="2"/>
+                  <rect id="m-sample" x="-5.5" y="18" width="11" height="16" fill="#7A4A2A" opacity="0"/>
+                  <path d="M-4.5 34 l4.5 8 l4.5 -8z" fill="#C9D2DF"/>
                 </g>
                 <line id="m-legL" x1="-21" y1="-6" x2="-21" y2="-66" stroke="#3CCB8A" stroke-width="5" stroke-linecap="round"/>
                 <line id="m-legL2" x1="-10" y1="-5" x2="-10" y2="-65" stroke="#3CCB8A" stroke-width="4" stroke-linecap="round" opacity=".45"/>
@@ -573,7 +573,7 @@ footer a.mail:hover{text-decoration:underline}
         <li class="step"><span class="n">04</span><h3>Rechnen &amp; Speichern</h3><p>Aus den Druckdaten entstehen Höhe und Sinkgeschwindigkeit, aus den LiDAR-Abständen das Profil der Oberfläche. Fotos und Messwerte landen auf der microSD-Karte.</p></li>
         <li class="step"><span class="n">05</span><h3>Landung</h3><p>Der CanSat setzt auf. Wir vergleichen die vorab bewertete sichere Fläche mit dem tatsächlichen Landeplatz.</p></li>
         <li class="step"><span class="n">06</span><h3>Aufrichten</h3><p>Der Getriebemotor fährt die vier Landebeine aus und richtet den CanSat auf.</p></li>
-        <li class="step"><span class="n">07</span><h3>Bohren &amp; Auswerten</h3><p>Der Bohrer nimmt eine Bodenprobe mit Ø 8 mm. Danach werten wir Probe, Flugdaten und 3D-Karte gemeinsam aus.</p></li>
+        <li class="step"><span class="n">07</span><h3>Bohren &amp; Auswerten</h3><p>Der Bohrer nimmt eine Bodenprobe mit Ø 15 mm. Danach werten wir Probe, Flugdaten und 3D-Karte gemeinsam aus.</p></li>
       </ol>
     </div>
   </section>
@@ -747,7 +747,7 @@ footer a.mail:hover{text-decoration:underline}
       {n:'Landebeine mit Motor', r:'Ausklappen und Aufrichten nach der Landung', p:'Im Flug liegen die Beine bündig in der Dosenwand. Nach der Landung fährt ein Getriebemotor sie aus und richtet den CanSat auf; ein Endschalter stoppt den Motor.', s:'4 Beine · 1 Getriebemotor', st:'dev'},
       {n:'Mini-DC-Getriebemotoren 100 RPM (2×)', r:'Antrieb für Beine und Bohrer', p:'Einer für die Landebeine, einer für den Bohrer. Laufen über den DRV8833; Betriebsstrom unter echter Last messen.', s:'6–12 V · 2 × 9 g'},
       {n:'Pololu DRV8833 Motortreiber', r:'Ansteuerung beider Getriebemotoren', p:'Kanal A für die Beine, Kanal B für den Bohrer; Anlauf- und Blockierstrom im Test prüfen.', s:'1,2 A Dauer / 2 A Spitze je Kanal · 1,0 g'},
-      {n:'Bohrer Ø 8 mm', r:'Bodenprobe', p:'Fährt nach dem Aufrichten in den Boden, aber erst, wenn der Lagesensor einen stehenden CanSat meldet.', s:'Ø 8 mm · ca. 15 mm Tiefe'},
+      {n:'Bohrer Ø 15 mm', r:'Bodenprobe', p:'Fährt nach dem Aufrichten in den Boden, aber erst, wenn der Lagesensor einen stehenden CanSat meldet.', s:'Ø 15 mm · ca. 15 mm Tiefe'},
       {n:'Fallschirm', r:'Bremst den Sinkflug', p:'Bremst den CanSat auf 8–11 m/s; die Befestigung muss 50 N halten.', s:'Modell wird noch festgelegt', st:'plan'},
       {n:'Antennen-Mechanik', r:'Antenne beim Aufprall schützen', p:'Halterung, die die Antenne beim Aufprall schützt und danach frei abstrahlen lässt – noch zu konstruieren.', s:'in Entwicklung', st:'dev'}
     ]},
